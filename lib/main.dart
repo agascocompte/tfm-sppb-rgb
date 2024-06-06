@@ -16,16 +16,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'SPPB Tests',
-        routeInformationParser: AppRouter.router.routeInformationParser,
-        routeInformationProvider: AppRouter.router.routeInformationProvider,
-        routerDelegate: AppRouter.router.routerDelegate,
-        locale: const Locale.fromSubtags(languageCode: 'es'),
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'SPPB Tests',
+      routeInformationParser: AppRouter.router.routeInformationParser,
+      routeInformationProvider: AppRouter.router.routeInformationProvider,
+      routerDelegate: AppRouter.router.routerDelegate,
+      locale: const Locale.fromSubtags(languageCode: 'es'),
     );
   }
 }

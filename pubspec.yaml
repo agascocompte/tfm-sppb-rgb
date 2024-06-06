@@ -1,5 +1,5 @@
 name: sppb_rgb
-description: "A new Flutter project."
+description: "Application to make SPPB tests on your mobile phone."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -57,8 +57,15 @@ dev_dependencies:
   build_runner: ^2.4.11
   injectable_generator: ^2.6.1
 
+  flutter_launcher_icons: ^0.13.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  android: "sppb_tests" 
+  ios: false
+  image_path: "assets/icon/icon.png"
+  # flutter pub run flutter_launcher_icons:main
 
 # The following section is specific to Flutter packages.
 flutter:
