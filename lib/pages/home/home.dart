@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sppb_rgb/router/router.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,10 +14,7 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.camera),
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => CameraPage()),
-              // );
+              context.go(AppRouter.gatherImageRoute);
             },
           ),
         ],
