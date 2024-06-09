@@ -12,9 +12,9 @@ class HomePage extends StatelessWidget {
         title: const Text('SPPB Tests'),
         actions: [
           IconButton(
-            icon: Icon(Icons.camera),
+            icon: const Icon(Icons.camera),
             onPressed: () {
-              context.go(AppRouter.gatherImageRoute);
+              context.push(AppRouter.gatherImageRoute);
             },
           ),
         ],
@@ -25,23 +25,23 @@ class HomePage extends StatelessWidget {
           children: <Widget>[
             ElevatedButton(
               onPressed: () {},
-              child: Text('Gait speed'),
+              child: const Text('Gait speed'),
             ),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Get up'),
+              child: const Text('Get up'),
             ),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Feet together'),
+              child: const Text('Feet together'),
             ),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Semi-tandem'),
+              child: const Text('Semi-tandem'),
             ),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Tandem'),
+              child: const Text('Tandem'),
             ),
           ],
         ),

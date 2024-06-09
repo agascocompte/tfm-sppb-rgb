@@ -1,93 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sppb_rgb/pages/gather_image.dart/bloc/gather_image_bloc.dart';
+import 'package:sppb_rgb/router/router.dart';
+import 'package:sppb_rgb/widgets/camera_view/camera_view.dart';
 
-class GatherImagePage extends StatefulWidget {
+class GatherImagePage extends StatelessWidget {
   const GatherImagePage({super.key});
 
   @override
-  GatherImagePageState createState() => GatherImagePageState();
-}
-
-class GatherImagePageState extends State<GatherImagePage> {
-  late List<CameraDescription> cameras;
-  late CameraController controller;
-  bool isRearCamera = true;
-
-  @override
-  void initState() {
-    super.initState();
-    initCamera();
-  }
-
-  Future<void> initCamera() async {
-    cameras = await availableCameras();
-    controller = CameraController(cameras[0], ResolutionPreset.high);
-    await controller.initialize();
-    setState(() {});
-  }
-
-  void switchCamera() {
-    if (controller != null) {
-      controller.dispose();
-    }
-    isRearCamera = !isRearCamera;
-    controller = CameraController(
-        isRearCamera ? cameras[0] : cameras[1], ResolutionPreset.high);
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!controller.value.isInitialized) {
-      return Container();
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Camera'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.switch_camera),
-            onPressed: switchCamera,
+    return BlocBuilder<GatherImageBloc, GatherImageState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Gather images'),
+            backgroundColor: Colors.white70,
+            leading: IconButton(
+                onPressed: () => context.pop(context),
+                icon: const Icon(Icons.arrow_back_outlined)),
+            actions: const [],
           ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          CameraPreview(controller),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Aquí puedes añadir funcionalidad para etiquetar las imágenes
-                  },
-                  child: Text('Etiqueta 1'),
-                ),
-                SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    // Aquí puedes añadir funcionalidad para etiquetar las imágenes
-                  },
-                  child: Text('Etiqueta 2'),
-                ),
-              ],
-            ),
+          body: Stack(
+            children: [
+              CameraView(
+                onCapture: () {},
+              ),
+              // Positioned(
+              //   bottom: 16,
+              //   left: 16,
+              //   child: Row(
+              //     children: [
+              //       ElevatedButton(
+              //         onPressed: () => context
+              //             .read<GatherImageBloc>()
+              //             .add(UpdateLabel(label: "feet-together")),
+              //         child: const Text('Pies juntos'),
+              //       ),
+              //       const SizedBox(width: 16),
+              //       ElevatedButton(
+              //         onPressed: () => context
+              //             .read<GatherImageBloc>()
+              //             .add(UpdateLabel(label: "semi-tandem")),
+              //         child: const Text('Semi-tándem'),
+              //       ),
+              //       const SizedBox(width: 16),
+              //       ElevatedButton(
+              //         onPressed: () => context
+              //             .read<GatherImageBloc>()
+              //             .add(UpdateLabel(label: "tandem")),
+              //         child: const Text('Tándem'),
+              //       ),
+              //       const SizedBox(width: 16),
+              //       ElevatedButton(
+              //         onPressed: () => context
+              //             .read<GatherImageBloc>()
+              //             .add(UpdateLabel(label: "no-balance")),
+              //         child: const Text('Sin equilibrio'),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
