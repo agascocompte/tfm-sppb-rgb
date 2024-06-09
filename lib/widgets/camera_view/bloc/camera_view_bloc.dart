@@ -30,5 +30,6 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     state.stateData.cameraController?.setDescription(isRearCamera
         ? state.stateData.cameras![0]
         : state.stateData.cameras![1]);
+    emit(CameraSwitched(state.stateData.copyWith(isRearCamera: isRearCamera)));
   }
 }

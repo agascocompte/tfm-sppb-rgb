@@ -38,3 +38,7 @@ class CamerasInitialized extends CameraViewState {
   CamerasInitialized(CameraViewStateData stateData)
       : super(stateData: stateData);
 }
+
+class CameraSwitched extends CameraViewState {
+  CameraSwitched(CameraViewStateData stateData) : super(stateData: stateData);
+}
