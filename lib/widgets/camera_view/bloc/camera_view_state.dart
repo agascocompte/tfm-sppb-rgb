@@ -42,3 +42,15 @@ class CamerasInitialized extends CameraViewState {
 class CameraSwitched extends CameraViewState {
   CameraSwitched(CameraViewStateData stateData) : super(stateData: stateData);
 }
+
+class CameraError extends CameraViewState {
+  final String error;
+  CameraError(CameraViewStateData stateData, {required this.error})
+      : super(stateData: stateData);
+}
+
+class GatheringImagesCompleted extends CameraViewState {
+  final String msg;
+  GatheringImagesCompleted(CameraViewStateData stateData, {required this.msg})
+      : super(stateData: stateData);
+}

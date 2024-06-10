@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sppb_rgb/di/dependency_injector.dart';
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart';
+import 'package:sppb_rgb/pages/view_captured_images/bloc/view_captured_images_bloc.dart';
 import 'package:sppb_rgb/router/router.dart';
 import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 sl<CameraViewBloc>()..add(InitializeCameras())),
         BlocProvider(create: (context) => sl<LabelImagesBloc>()),
+        BlocProvider(create: (context) => sl<ViewCapturedImagesBloc>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

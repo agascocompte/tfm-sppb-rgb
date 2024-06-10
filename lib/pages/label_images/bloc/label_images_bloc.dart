@@ -22,12 +22,9 @@ class LabelImagesBloc extends Bloc<LabelImagesEvent, LabelImagesState> {
       StartCountDown event, Emitter<LabelImagesState> emit) async {
     emit(UpdateCountDown(state.stateData.copyWith(countDown: event.countDown)));
     await for (final countdown in _countDownStream(event.countDown)) {
-      if (countdown < 0) {
-        emit(CountDownFinished(state.stateData.copyWith(countDown: -1)));
-      } else {
-        emit(UpdateCountDown(state.stateData.copyWith(countDown: countdown)));
-      }
+      emit(UpdateCountDown(state.stateData.copyWith(countDown: countdown)));
     }
+    emit(CountDownFinished(state.stateData.copyWith(countDown: 0)));
   }
 
   Stream<int> _countDownStream(int start) async* {
@@ -37,6 +34,5 @@ class LabelImagesBloc extends Bloc<LabelImagesEvent, LabelImagesState> {
       countDown--;
       yield countDown;
     }
-    yield -1;
   }
 }

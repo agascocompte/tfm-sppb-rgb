@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
         title: const Text('SPPB Tests'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.camera),
+            icon: const Icon(Icons.label_outline),
             onPressed: () {
               context.push(AppRouter.gatherImageRoute);
             },

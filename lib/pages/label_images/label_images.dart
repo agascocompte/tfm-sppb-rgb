@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart';
 import 'package:sppb_rgb/pages/label_images/widgets/label_images_appbar.dart';
+import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
 import 'package:sppb_rgb/widgets/camera_view/camera_view.dart';
 
 class LabelImagesPage extends StatelessWidget {
@@ -14,13 +15,16 @@ class LabelImagesPage extends StatelessWidget {
       body: BlocConsumer<LabelImagesBloc, LabelImagesState>(
         listener: (context, state) {
           if (state is CountDownFinished) {
-            print("Empezar a grabar");
+            context
+                .read<CameraViewBloc>()
+                .add(BeginImageCapture(label: state.stateData.label));
           }
         },
         builder: (context, state) {
           return Stack(
             children: [
               CameraView(
+                viewCapturedImages: true,
                 onCapture: state is UpdateCountDown
                     ? () {}
                     : () => context

@@ -11,7 +11,9 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart' as _i3;
-import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart' as _i4;
+import 'package:sppb_rgb/pages/view_captured_images/bloc/view_captured_images_bloc.dart'
+    as _i4;
+import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart' as _i5;
 
 extension GetItInjectableX on _i1.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -25,7 +27,8 @@ extension GetItInjectableX on _i1.GetIt {
       environmentFilter,
     );
     gh.factory<_i3.LabelImagesBloc>(() => _i3.LabelImagesBloc());
-    gh.factory<_i4.CameraViewBloc>(() => _i4.CameraViewBloc());
+    gh.factory<_i4.ViewCapturedImagesBloc>(() => _i4.ViewCapturedImagesBloc());
+    gh.factory<_i5.CameraViewBloc>(() => _i5.CameraViewBloc());
     return this;
   }
 }

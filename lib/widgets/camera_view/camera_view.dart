@@ -1,17 +1,28 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sppb_rgb/router/router.dart';
+import 'package:sppb_rgb/widgets/app_scaffold_messenger.dart';
 import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
 
 class CameraView extends StatelessWidget {
   final Function() onCapture;
+  final bool viewCapturedImages;
 
-  const CameraView({super.key, required this.onCapture});
+  const CameraView(
+      {super.key, required this.onCapture, this.viewCapturedImages = false});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CameraViewBloc, CameraViewState>(
-        builder: (context, state) {
+    return BlocConsumer<CameraViewBloc, CameraViewState>(
+        listener: (context, state) {
+      if (state is CameraError) {
+        AppScaffoldMessenger.showWarningScaffold(context, state.error);
+      } else if (state is GatheringImagesCompleted) {
+        AppScaffoldMessenger.showSuccessScaffold(context, state.msg);
+      }
+    }, builder: (context, state) {
       return state.stateData.cameraController != null
           ? Stack(
               children: [
@@ -35,6 +46,17 @@ class CameraView extends StatelessWidget {
                     child: const Icon(Icons.switch_camera),
                   ),
                 ),
+                if (viewCapturedImages)
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: FloatingActionButton(
+                      heroTag: 'viewCapturedImages',
+                      onPressed: () =>
+                          context.push(AppRouter.viewCapturedImages),
+                      child: const Icon(Icons.image_outlined),
+                    ),
+                  ),
               ],
             )
           : const Center(child: Text("Cámara no inicializada"));
