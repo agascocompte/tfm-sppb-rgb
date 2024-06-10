@@ -6,7 +6,7 @@ class LabelImagesStateData {
 
   LabelImagesStateData({
     this.label = "feet-together",
-    this.countDown = 0,
+    this.countDown = -1,
   });
 
   LabelImagesStateData copyWith({

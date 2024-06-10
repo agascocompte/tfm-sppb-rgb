@@ -11,7 +11,12 @@ class LabelImagesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const LabelImagesAppBar(),
-      body: BlocBuilder<LabelImagesBloc, LabelImagesState>(
+      body: BlocConsumer<LabelImagesBloc, LabelImagesState>(
+        listener: (context, state) {
+          if (state is CountDownFinished) {
+            print("Empezar a grabar");
+          }
+        },
         builder: (context, state) {
           return Stack(
             children: [
@@ -20,16 +25,26 @@ class LabelImagesPage extends StatelessWidget {
                     ? () {}
                     : () => context
                         .read<LabelImagesBloc>()
-                        .add(StartCountDown(countDown: 10)),
+                        .add(StartCountDown(countDown: 5)),
               ),
               if (state is UpdateCountDown)
                 Center(
-                  child: Text(
-                    state.stateData.countDown.toString(),
-                    style: const TextStyle(
-                      fontSize: 48,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 150),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return ScaleTransition(scale: animation, child: child);
+                    },
+                    child: Text(
+                      state.stateData.countDown == 0
+                          ? 'GO'
+                          : state.stateData.countDown.toString(),
+                      key: ValueKey<int>(state.stateData.countDown),
+                      style: const TextStyle(
+                        fontSize: 120,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

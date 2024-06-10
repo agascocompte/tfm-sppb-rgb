@@ -21,16 +21,22 @@ class LabelImagesBloc extends Bloc<LabelImagesEvent, LabelImagesState> {
   Future<void> _startCountDown(
       StartCountDown event, Emitter<LabelImagesState> emit) async {
     emit(UpdateCountDown(state.stateData.copyWith(countDown: event.countDown)));
-
-    while (state.stateData.countDown >= 0) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (state.stateData.countDown == 0) {
-        emit(CountDownFinished(state.stateData));
+    await for (final countdown in _countDownStream(event.countDown)) {
+      if (countdown < 0) {
+        emit(CountDownFinished(state.stateData.copyWith(countDown: -1)));
       } else {
-        print("${state.stateData.countDown}");
-        emit(UpdateCountDown(state.stateData
-            .copyWith(countDown: state.stateData.countDown - 1)));
+        emit(UpdateCountDown(state.stateData.copyWith(countDown: countdown)));
       }
     }
+  }
+
+  Stream<int> _countDownStream(int start) async* {
+    int countDown = start;
+    while (countDown >= 0) {
+      await Future.delayed(const Duration(seconds: 1));
+      countDown--;
+      yield countDown;
+    }
+    yield -1;
   }
 }
