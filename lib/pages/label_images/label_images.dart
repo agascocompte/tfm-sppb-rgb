@@ -15,9 +15,8 @@ class LabelImagesPage extends StatelessWidget {
       body: BlocConsumer<LabelImagesBloc, LabelImagesState>(
         listener: (context, state) {
           if (state is CountDownFinished) {
-            context
-                .read<CameraViewBloc>()
-                .add(BeginImageCapture(label: state.stateData.label));
+            context.read<CameraViewBloc>().add(BeginImageCapture(
+                label: state.stateData.label, capturingTime: 30));
           }
         },
         builder: (context, state) {

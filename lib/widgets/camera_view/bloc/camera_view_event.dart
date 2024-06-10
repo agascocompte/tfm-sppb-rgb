@@ -7,6 +7,7 @@ class InitializeCameras extends CameraViewEvent {}
 class SwitchCamera extends CameraViewEvent {}
 
 class BeginImageCapture extends CameraViewEvent {
-  String label;
-  BeginImageCapture({required this.label});
+  final String label;
+  final int capturingTime;
+  BeginImageCapture({required this.label, required this.capturingTime});
 }

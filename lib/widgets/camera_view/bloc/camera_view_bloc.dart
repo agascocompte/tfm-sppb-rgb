@@ -38,7 +38,7 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
 
   FutureOr<void> _beginImageCapture(
       BeginImageCapture event, Emitter<CameraViewState> emit) async {
-    const captureDuration = Duration(seconds: 10);
+    Duration captureDuration = Duration(seconds: event.capturingTime);
     const captureInterval = Duration(milliseconds: 50);
 
     final directory = await getExternalStorageDirectory();
