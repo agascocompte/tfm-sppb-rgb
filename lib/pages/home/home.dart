@@ -24,12 +24,8 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: () {},
-              child: const Text('Gait speed'),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Get up'),
+              onPressed: () => context.push(AppRouter.testYolo8),
+              child: const Text('Test YOLO8'),
             ),
             ElevatedButton(
               onPressed: () {},

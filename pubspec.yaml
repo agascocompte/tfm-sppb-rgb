@@ -37,7 +37,7 @@ dependencies:
   injectable: ^2.4.2
   get_it: ^7.7.0
   # Bloc
-  flutter_bloc: ^8.1.5
+  flutter_bloc: ^8.1.6
   # Camera
   camera: ^0.11.0+1
   # Save images
@@ -46,6 +46,9 @@ dependencies:
   share_plus: ^7.2.2
   # Zip
   archive: ^3.6.1
+  # Yolo8
+  flutter_vision: ^1.1.4
+  image_picker: ^1.1.2
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -89,6 +92,9 @@ flutter:
     - assets/images/semi-tandem.png
     - assets/images/tandem.png
     - assets/images/no-balance.png
+
+    - assets/yolo8/labels.txt
+    - assets/yolo8/yolov8n-seg.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
