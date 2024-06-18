@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
@@ -23,6 +24,7 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
   int imageWidth = 1;
   bool isLoaded = false;
   bool isDetecting = false;
+  GlobalKey previewContainer = GlobalKey();
 
   @override
   void initState() {
@@ -119,33 +121,36 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
     double pady = (screen.height - newHeight - 80) / 3;
 
     return yoloResults!.map((result) {
-      return Stack(
-        children: [
-          Positioned(
-            left: result["box"][1] * factorX,
-            top: result["box"][0] * factorY + pady,
-            width: (result["box"][3] - result["box"][1]) * factorX,
-            height: (result["box"][2] - result["box"][0]) * factorY,
-            child: Container(
-              color: Colors.black,
-            ),
-          ),
-          Positioned(
+      return RepaintBoundary(
+        key: previewContainer,
+        child: Stack(
+          children: [
+            Positioned(
               left: result["box"][1] * factorX,
               top: result["box"][0] * factorY + pady,
               width: (result["box"][3] - result["box"][1]) * factorX,
               height: (result["box"][2] - result["box"][0]) * factorY,
-              child: CustomPaint(
-                painter: PolygonPainter(
-                    points: (result["polygons"] as List<dynamic>).map((e) {
-                      Map<String, double> xy = Map<String, double>.from(e);
-                      xy['x'] = (xy['x'] as double) * factorX;
-                      xy['y'] = (xy['y'] as double) * factorY;
-                      return xy;
-                    }).toList(),
-                    offset: (result["box"][3] - result["box"][1]) * factorX),
-              )),
-        ],
+              child: Container(
+                color: Colors.black,
+              ),
+            ),
+            Positioned(
+                left: result["box"][1] * factorX,
+                top: result["box"][0] * factorY + pady,
+                width: (result["box"][3] - result["box"][1]) * factorX,
+                height: (result["box"][2] - result["box"][0]) * factorY,
+                child: CustomPaint(
+                  painter: PolygonPainter(
+                      points: (result["polygons"] as List<dynamic>).map((e) {
+                        Map<String, double> xy = Map<String, double>.from(e);
+                        xy['x'] = (xy['x'] as double) * factorX;
+                        xy['y'] = (xy['y'] as double) * factorY;
+                        return xy;
+                      }).toList(),
+                      offset: (result["box"][3] - result["box"][1]) * factorX),
+                )),
+          ],
+        ),
       );
     }).toList();
   }
@@ -169,7 +174,7 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
               yoloResults!.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.crop),
-              onPressed: () => saveAndShowBBox(),
+              onPressed: () => processSegmentedImage(),
             ),
           if (imageFile != null)
             IconButton(
@@ -219,41 +224,37 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
     );
   }
 
-  void saveAndShowBBox() async {
-    if (imageFile == null || yoloResults == null || yoloResults!.isEmpty)
-      return;
+  void processSegmentedImage() async {
+    RenderRepaintBoundary boundary = previewContainer.currentContext!
+        .findRenderObject() as RenderRepaintBoundary;
 
-    // Cargamos la imagen completa como datos de bytes y luego la convertimos.
-    final originalImageData = await imageFile!.readAsBytes();
-    img.Image originalImage = img.decodeImage(originalImageData)!;
+    // Capturar imagen bbox y segmentación
+    ui.Image image = await boundary.toImage();
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-    // Suponiendo que queremos la primera bbox detectada para simplificar.
-    Map<String, dynamic> firstResult = yoloResults!.first;
-    List<double> box = firstResult["box"];
+    // Decodifica la imagen capturada
+    img.Image originalImage = img.decodeImage(pngBytes)!;
 
-    // Coordenadas de la bbox
-    int left = (box[1] * originalImage.width).toInt();
-    int top = (box[0] * originalImage.height).toInt();
-    int right = (box[3] * originalImage.width).toInt();
-    int bottom = (box[2] * originalImage.height).toInt();
-
-    // Crear una imagen de recorte
-    img.Image croppedImage = img.copyCrop(originalImage,
-        x: left, y: top, width: right - left, height: bottom - top);
-
-    // Redimensionar la imagen recortada
+    // Redimensiona la imagen a 128x256
     img.Image resizedImage =
-        img.copyResize(croppedImage, width: 128, height: 256);
+        img.copyResize(originalImage, width: 128, height: 256);
 
-    // Convertir la imagen redimensionada de vuelta a Uint8List
-    List<int> resizedImageData = img.encodePng(resizedImage);
+    // Calcula la altura de la mitad inferior
+    int startY = resizedImage.height ~/ 2;
+    int height = resizedImage.height - startY;
 
-    // Guardamos la imagen redimensionada
-    final String newPath =
-        '${(await getTemporaryDirectory()).path}/cropped_resized.png';
-    await File(newPath).writeAsBytes(resizedImageData);
+    // Recorta la mitad inferior
+    img.Image halfImage = img.copyCrop(resizedImage,
+        x: 0, y: startY, width: resizedImage.width, height: height);
 
-    // Actualizar el estado para mostrar la imagen redimensionada
+    // Guarda la imagen final
+    String dir = (await getTemporaryDirectory()).path;
+    String filename = "$dir/screenshot.png";
+    File finalImageFile = File(filename);
+    await finalImageFile.writeAsBytes(img.encodePng(halfImage));
+
+    print("Imagen final guardada en: $filename");
   }
 }
 
