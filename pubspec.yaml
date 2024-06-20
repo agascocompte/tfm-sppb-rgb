@@ -48,7 +48,11 @@ dependencies:
   archive: ^3.6.1
   # Yolo8
   flutter_vision: ^1.1.4
-  image_picker: ^1.1.2
+  # Tensorflow
+  # tflite_flutter: ^0.10.4
+  tflite_flutter:
+    git:
+        url: https://github.com/CaptainDario/flutter-tflite
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -95,6 +99,8 @@ flutter:
 
     - assets/yolo8/labels.txt
     - assets/yolo8/yolov8n-seg.tflite
+
+    - assets/models/vit_model_optimized.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
