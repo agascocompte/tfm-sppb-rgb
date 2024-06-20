@@ -15,6 +15,7 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     on<InitializeCameras>(_initCameras);
     on<SwitchCamera>(_switchCamera);
     on<BeginImageCapture>(_beginImageCapture);
+    on<TakePicture>(_takePicture);
   }
 
   FutureOr<void> _initCameras(
@@ -80,5 +81,11 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
       emit(CameraError(state.stateData,
           error: "Error: camera is not initialized"));
     }
+  }
+
+  FutureOr<void> _takePicture(
+      TakePicture event, Emitter<CameraViewState> emit) async {
+    XFile picture = await state.stateData.cameraController!.takePicture();
+    emit(PictureCaptured(state.stateData, picture: picture));
   }
 }

@@ -54,3 +54,9 @@ class GatheringImagesCompleted extends CameraViewState {
   GatheringImagesCompleted(CameraViewStateData stateData, {required this.msg})
       : super(stateData: stateData);
 }
+
+class PictureCaptured extends CameraViewState {
+  final XFile picture;
+  PictureCaptured(CameraViewStateData stateData, {required this.picture})
+      : super(stateData: stateData);
+}

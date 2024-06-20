@@ -11,3 +11,5 @@ class BeginImageCapture extends CameraViewEvent {
   final int capturingTime;
   BeginImageCapture({required this.label, required this.capturingTime});
 }
+
+class TakePicture extends CameraViewEvent {}

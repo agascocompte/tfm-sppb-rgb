@@ -1,16 +1,16 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vision/flutter_vision.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+import 'package:sppb_rgb/models/classifier/classifier.dart';
+import 'package:sppb_rgb/models/classifier/vit_classifier.dart';
 import 'package:sppb_rgb/models/polygon_painter.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
+import 'package:sppb_rgb/widgets/camera_view/camera_view.dart';
 
 class Yolo8TestPage extends StatefulWidget {
   const Yolo8TestPage({Key? key}) : super(key: key);
@@ -20,50 +20,32 @@ class Yolo8TestPage extends StatefulWidget {
 }
 
 class _Yolo8TestPageState extends State<Yolo8TestPage> {
-  List<String> labels = [
-    "feet-together",
-    "semi-tandem",
-    "tandem",
-    "no-balance"
-  ];
   FlutterVision? vision;
-  CameraController? controller;
   List<Map<String, dynamic>>? yoloResults;
   XFile? imageFile;
   int imageHeight = 1;
   int imageWidth = 1;
   bool isLoaded = false;
-  bool isPredictorModelLoaded = false;
-  bool isDetecting = false;
   GlobalKey previewContainer = GlobalKey();
-  Interpreter? _interpreter;
+  Classifier? classifier;
   String label = "No data";
   Stopwatch stopwatch = Stopwatch();
+  String yoloTime = "";
 
   @override
   void initState() {
     super.initState();
     vision = FlutterVision();
-    initCamera();
     loadYoloModel();
-    loadClassifierModel();
+    classifier =
+        ViTClassifier(modelPath: 'assets/models/vit_model_optimized.tflite');
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller?.dispose();
     vision?.closeYoloModel();
-    _interpreter?.close();
-  }
-
-  void initCamera() async {
-    final cameras = await availableCameras();
-    controller = CameraController(cameras[0], ResolutionPreset.high);
-    await controller?.initialize();
-    setState(() {
-      isLoaded = true;
-    });
+    classifier?.close();
   }
 
   Future<void> loadYoloModel() async {
@@ -80,87 +62,42 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
     });
   }
 
-  Future<void> loadClassifierModel() async {
-    _interpreter =
-        await Interpreter.fromAsset('assets/models/vit_model_optimized.tflite');
-    isPredictorModelLoaded = true;
-  }
-
-  Future<void> takePicture() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      return;
-    }
-    if (controller!.value.isTakingPicture) {
-      return;
-    }
-    try {
-      XFile file = await controller!.takePicture();
-      setState(() {
-        imageFile = file;
-      });
-      processImage(file);
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Future<void> processImage(XFile file) async {
     stopwatch.start();
     Uint8List bytes = await file.readAsBytes();
 
-    try {
-      final image = await decodeImageFromList(bytes);
-      imageHeight = image.height;
-      imageWidth = image.width;
-      final result = await vision?.yoloOnImage(
-        bytesList: bytes,
-        imageHeight: image.height,
-        imageWidth: image.width,
-        iouThreshold: 0.8,
-        confThreshold: 0.4,
-        classThreshold: 0.5,
-      );
-      if (result != null && result.isNotEmpty) {
-        updateAndProcess(result);
-      } else {
-        setState(() {
-          label = "No segmentation found";
-          stopwatch.stop();
-          stopwatch.reset();
-        });
-      }
-    } catch (e) {
-      print('Error processing image: $e');
+    final image = await decodeImageFromList(bytes);
+    imageHeight = image.height;
+    imageWidth = image.width;
+    final result = await vision?.yoloOnImage(
+      bytesList: bytes,
+      imageHeight: image.height,
+      imageWidth: image.width,
+      iouThreshold: 0.8,
+      confThreshold: 0.4,
+      classThreshold: 0.5,
+    );
+    if (result != null && result.isNotEmpty) {
+      updateAndProcess(result);
+    } else {
       setState(() {
-        label = "YOLO vision out";
+        label = "No segmentation found";
+        stopwatch.stop();
+        stopwatch.reset();
       });
-      reinitializeVision();
     }
-  }
-
-  void reinitializeVision() async {
-    if (vision != null) {
-      await vision?.closeYoloModel();
-    }
-    vision = FlutterVision();
-    await loadYoloModel();
-    // Re-initialize other components if necessary
   }
 
   void updateAndProcess(result) {
     setState(() {
       yoloResults =
           result; // Suponiendo que 'result' es lo que recibes del modelo.
+      yoloTime = stopwatch.elapsedMilliseconds.toString();
+      stopwatch.reset();
+      stopwatch.start();
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       processSegmentedImage();
-    });
-  }
-
-  void resetView() {
-    setState(() {
-      imageFile = null;
-      yoloResults = null;
     });
   }
 
@@ -213,7 +150,7 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    if (!isLoaded || !isPredictorModelLoaded) {
+    if (!isLoaded || !(classifier?.isLoaded ?? true)) {
       return const Scaffold(
         body: Center(
           child: Text("Model not loaded, waiting for it"),
@@ -223,73 +160,41 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("YOLOv8 Segmentation"),
-        actions: [
-          if (imageFile != null &&
-              yoloResults != null &&
-              yoloResults!.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.crop),
-              onPressed: () => processSegmentedImage(),
-            ),
-          if (imageFile != null)
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: resetView,
-            ),
-        ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (controller != null) CameraPreview(controller!),
-          // if (imageFile != null)
-          //   Positioned.fill(
-          //     child: Image.file(
-          //       File(imageFile!.path),
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-          ...displayBoxesAroundRecognizedObjects(size),
-          Positioned(
-            bottom: 75,
-            width: MediaQuery.of(context).size.width,
-            child: Container(
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  width: 5,
-                  color: Colors.white,
-                  style: BorderStyle.solid,
-                ),
-              ),
-              child: IconButton(
-                onPressed: takePicture,
-                icon: const Icon(
-                  Icons.camera,
-                  color: Colors.white,
-                ),
-                iconSize: 50,
-              ),
+      body: BlocListener<CameraViewBloc, CameraViewState>(
+        listener: (context, state) {
+          if (state is PictureCaptured) {
+            setState(() {
+              imageFile = state.picture;
+            });
+            processImage(state.picture);
+          }
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CameraView(
+              onCapture: () =>
+                  context.read<CameraViewBloc>().add(TakePicture()),
             ),
-          ),
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Container(
-              height: 40,
-              width: 360,
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: Text(
-                  label,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+            ...displayBoxesAroundRecognizedObjects(size),
+            Positioned(
+              top: 20,
+              left: 20,
+              child: Container(
+                height: 100,
+                width: 360,
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Text(
+                    label,
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -308,7 +213,7 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
 
 // Redimensiona la imagen a 224x224
     img.Image resizedImage =
-        img.copyResize(originalImage, width: 128, height: 256);
+        img.copyResize(originalImage, width: 224, height: 448);
 
     // Calcula la altura de la mitad inferior
     int startY = resizedImage.height ~/ 2;
@@ -326,68 +231,21 @@ class _Yolo8TestPageState extends State<Yolo8TestPage> {
     // await finalImageFile.writeAsBytes(img.encodePng(halfImage));
 
     // print("Imagen final guardada en: $filename");
-    var result = await predict(halfImage);
+
+    Map<String, dynamic> result = classifier!.predict(halfImage);
+
+    setState(() {
+      label = result['label'] +
+          " YOLO: " +
+          yoloTime +
+          " ms CLF: " +
+          classifier!.timeSpent.toString() +
+          " ms TOTAL: " +
+          (int.parse(yoloTime) + classifier!.timeSpent).toString() +
+          " ms";
+    });
+    stopwatch.stop();
+    stopwatch.reset();
     print(result);
-
-    if (result != null && result.isNotEmpty) {
-      List<double> probabilities =
-          result[0]; // Aquí capturas la primera fila de la salida
-      int highestProbIndex = probabilities.indexOf(
-          probabilities.reduce(max)); // Encuentra el índice del valor más alto
-      setState(() {
-        stopwatch.stop();
-        label = labels[highestProbIndex] +
-            " in " +
-            stopwatch.elapsedMilliseconds.toString() +
-            " ms";
-        stopwatch.reset();
-      });
-    } else {
-      setState(() {
-        label = "Prediction failed";
-      });
-    }
-  }
-
-  Future<List<dynamic>?> predict(img.Image image) async {
-    List<dynamic>? output;
-
-    try {
-      var input = imageToByteListInt32(image);
-      var inputTensor = input.reshape([
-        1,
-        224,
-        224,
-        3
-      ]); // Cambio para ajustar al formato de entrada [batch, height, width, channels]
-      output = List.generate(
-          1,
-          (_) => List.filled(
-              4, 0.0)); // Preparar el buffer de salida para 4 clases
-
-      _interpreter!.run(inputTensor, output);
-    } catch (e) {
-      print("Error during prediction: $e");
-      return null;
-    }
-
-    return output;
-  }
-
-  Int32List imageToByteListInt32(img.Image image) {
-    img.Image resized = img.copyResize(image, width: 224, height: 224);
-    var convertedBytes = Float32List(1 * 224 * 224 * 3);
-    var buffer = Int32List.view(convertedBytes.buffer);
-    int pixelIndex = 0;
-    for (int i = 0; i < 224; i++) {
-      for (int j = 0; j < 224; j++) {
-        var pixel = resized.getPixel(j, i);
-        buffer[pixelIndex++] = pixel.r
-            .toInt(); // Asignar el valor directo si decides no normalizar
-        buffer[pixelIndex++] = pixel.g.toInt();
-        buffer[pixelIndex++] = pixel.b.toInt();
-      }
-    }
-    return buffer;
   }
 }
