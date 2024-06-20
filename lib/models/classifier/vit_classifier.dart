@@ -6,17 +6,15 @@ import 'package:sppb_rgb/models/classifier/classifier.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class ViTClassifier extends Classifier {
-  final String modelPath;
   Stopwatch? stopwatch;
-  List<dynamic>? output;
 
-  ViTClassifier({required this.modelPath}) {
+  ViTClassifier() {
     stopwatch = Stopwatch();
-    loadModel();
   }
   @override
   Future<void> loadModel() async {
-    interpreter = await Interpreter.fromAsset(modelPath);
+    interpreter =
+        await Interpreter.fromAsset('assets/models/vit_model_optimized.tflite');
     isLoaded = true;
   }
 

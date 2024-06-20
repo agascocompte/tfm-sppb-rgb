@@ -2,7 +2,8 @@
     <application
         android:label="SPPB"
         android:name="${applicationName}"
-        android:icon="@mipmap/sppb_tests">
+        android:icon="@mipmap/sppb_tests"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
