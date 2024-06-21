@@ -31,8 +31,6 @@ class Yolo8VisionSegmentator extends Segmentator {
   Future<List<Map<String, dynamic>>?> processImage(XFile file) async {
     stopwatch!.reset();
     stopwatch!.start();
-    print("-------------------------->");
-    print(stopwatch!.elapsedMilliseconds);
     Uint8List bytes = await file.readAsBytes();
 
     final image = await decodeImageFromList(bytes);
@@ -47,9 +45,6 @@ class Yolo8VisionSegmentator extends Segmentator {
 
     stopwatch!.stop();
     timeSpent = stopwatch!.elapsedMilliseconds;
-    print("-------------------------->");
-
-    print(stopwatch!.elapsedMilliseconds);
     return result;
   }
 

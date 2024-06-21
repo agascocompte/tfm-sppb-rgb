@@ -13,8 +13,8 @@ class MobileNetV3SmallClassifier extends Classifier {
   }
   @override
   Future<void> loadModel() async {
-    interpreter =
-        await Interpreter.fromAsset('assets/models/mobile_net_v3_small.tflite');
+    interpreter = await Interpreter.fromAsset(
+        'assets/models/mobile_net_v3_small_opt.tflite');
     isLoaded = true;
   }
 

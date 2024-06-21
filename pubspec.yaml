@@ -102,6 +102,7 @@ flutter:
 
     - assets/models/vit_model_optimized.tflite
     - assets/models/mobile_net_v3_small.tflite
+    - assets/models/mobile_net_v3_small_opt.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

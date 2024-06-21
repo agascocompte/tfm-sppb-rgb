@@ -10,7 +10,6 @@ import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sppb_rgb/models/classifier/classifier.dart';
 import 'package:sppb_rgb/models/classifier/mobile_net_v3_small_classifier.dart';
-import 'package:sppb_rgb/models/classifier/vit_classifier.dart';
 import 'package:sppb_rgb/models/segmentator/segmentator.dart';
 import 'package:sppb_rgb/models/segmentator/yolo8_vision_segmentator.dart';
 
@@ -75,7 +74,7 @@ class Yolo8TestBloc extends Bloc<Yolo8TestEvent, Yolo8TestState> {
   FutureOr<void> _processSegmentedImage(
       ProcessSegmentedImage event, Emitter<Yolo8TestState> emit) async {
     RenderRepaintBoundary boundary =
-        state.stateData.previewContainer?.currentContext?.findRenderObject()
+        state.stateData.previewContainer.currentContext?.findRenderObject()
             as RenderRepaintBoundary;
 
     // Capturar imagen bbox y segmentación
