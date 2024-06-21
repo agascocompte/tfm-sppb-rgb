@@ -17,19 +17,19 @@ import 'package:sppb_rgb/models/segmentator/yolo8_vision_segmentator.dart';
 import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
 
-part 'yolo8_test_event.dart';
-part 'yolo8_test_state.dart';
+part 'yolo8_seg_test_event.dart';
+part 'yolo8_seg_test_state.dart';
 
 @injectable
-class Yolo8TestBloc extends Bloc<Yolo8TestEvent, Yolo8TestState> {
-  Yolo8TestBloc() : super(Yolo8TestInitial()) {
-    on<Yolo8TestEvent>(_loadModels);
+class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
+  Yolo8SegTestBloc() : super(Yolo8SegTestInitial()) {
+    on<Yolo8SegTestEvent>(_loadModels);
     on<ProcessImage>(_processImage);
     on<ProcessSegmentedImage>(_processSegmentedImage);
   }
 
   FutureOr<void> _loadModels(
-      Yolo8TestEvent event, Emitter<Yolo8TestState> emit) async {
+      Yolo8SegTestEvent event, Emitter<Yolo8SegTestState> emit) async {
     Classifier classifier = MobileNetV3SmallClassifier();
     Segmentator segmentator = Yolo8VisionSegmentator();
 
@@ -45,7 +45,7 @@ class Yolo8TestBloc extends Bloc<Yolo8TestEvent, Yolo8TestState> {
   }
 
   FutureOr<void> _processImage(
-      ProcessImage event, Emitter<Yolo8TestState> emit) async {
+      ProcessImage event, Emitter<Yolo8SegTestState> emit) async {
     Uint8List bytes = await event.image.readAsBytes();
     final image = await decodeImageFromList(bytes);
     emit(CapturedImageUpdate(state.stateData.copyWith(
@@ -77,7 +77,7 @@ class Yolo8TestBloc extends Bloc<Yolo8TestEvent, Yolo8TestState> {
   }
 
   FutureOr<void> _processSegmentedImage(
-      ProcessSegmentedImage event, Emitter<Yolo8TestState> emit) async {
+      ProcessSegmentedImage event, Emitter<Yolo8SegTestState> emit) async {
     RenderRepaintBoundary boundary =
         state.stateData.previewContainer.currentContext?.findRenderObject()
             as RenderRepaintBoundary;

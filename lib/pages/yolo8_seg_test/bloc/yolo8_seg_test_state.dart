@@ -1,6 +1,6 @@
-part of 'yolo8_test_bloc.dart';
+part of 'yolo8_seg_test_bloc.dart';
 
-class Yolo8TestStateData {
+class Yolo8SegTestStateData {
   final Classifier? classifier;
   final Segmentator? segmentator;
   final String label;
@@ -10,7 +10,7 @@ class Yolo8TestStateData {
   final int imageHeight;
   final GlobalKey previewContainer = GlobalKey();
 
-  Yolo8TestStateData({
+  Yolo8SegTestStateData({
     this.label = "No data",
     this.classifier,
     this.segmentator,
@@ -20,7 +20,7 @@ class Yolo8TestStateData {
     this.imageHeight = 0,
   });
 
-  Yolo8TestStateData copyWith({
+  Yolo8SegTestStateData copyWith({
     Classifier? classifier,
     Segmentator? segmentator,
     String? label,
@@ -29,7 +29,7 @@ class Yolo8TestStateData {
     int? imageWidth,
     int? imageHeight,
   }) {
-    return Yolo8TestStateData(
+    return Yolo8SegTestStateData(
       classifier: classifier ?? this.classifier,
       segmentator: segmentator ?? this.segmentator,
       label: label ?? this.label,
@@ -41,35 +41,36 @@ class Yolo8TestStateData {
   }
 }
 
-abstract class Yolo8TestState {
-  final Yolo8TestStateData stateData;
+abstract class Yolo8SegTestState {
+  final Yolo8SegTestStateData stateData;
 
-  Yolo8TestState({required this.stateData});
+  Yolo8SegTestState({required this.stateData});
 }
 
-final class Yolo8TestInitial extends Yolo8TestState {
-  Yolo8TestInitial() : super(stateData: Yolo8TestStateData());
+final class Yolo8SegTestInitial extends Yolo8SegTestState {
+  Yolo8SegTestInitial() : super(stateData: Yolo8SegTestStateData());
 }
 
-class ModelsLoaded extends Yolo8TestState {
-  ModelsLoaded(Yolo8TestStateData stateData) : super(stateData: stateData);
+class ModelsLoaded extends Yolo8SegTestState {
+  ModelsLoaded(Yolo8SegTestStateData stateData) : super(stateData: stateData);
 }
 
-class CapturedImageUpdate extends Yolo8TestState {
-  CapturedImageUpdate(Yolo8TestStateData stateData)
+class CapturedImageUpdate extends Yolo8SegTestState {
+  CapturedImageUpdate(Yolo8SegTestStateData stateData)
       : super(stateData: stateData);
 }
 
-class SegmentationFailed extends Yolo8TestState {
-  SegmentationFailed(Yolo8TestStateData stateData)
+class SegmentationFailed extends Yolo8SegTestState {
+  SegmentationFailed(Yolo8SegTestStateData stateData)
       : super(stateData: stateData);
 }
 
-class SegmentationResultsUpdated extends Yolo8TestState {
-  SegmentationResultsUpdated(Yolo8TestStateData stateData)
+class SegmentationResultsUpdated extends Yolo8SegTestState {
+  SegmentationResultsUpdated(Yolo8SegTestStateData stateData)
       : super(stateData: stateData);
 }
 
-class PredictionSuccess extends Yolo8TestState {
-  PredictionSuccess(Yolo8TestStateData stateData) : super(stateData: stateData);
+class PredictionSuccess extends Yolo8SegTestState {
+  PredictionSuccess(Yolo8SegTestStateData stateData)
+      : super(stateData: stateData);
 }

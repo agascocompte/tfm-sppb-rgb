@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sppb_rgb/di/dependency_injector.dart';
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart';
 import 'package:sppb_rgb/pages/view_captured_images/bloc/view_captured_images_bloc.dart';
-import 'package:sppb_rgb/pages/yolo8_test/bloc/yolo8_test_bloc.dart';
+import 'package:sppb_rgb/pages/yolo8_seg_test/bloc/yolo8_seg_test_bloc.dart';
 import 'package:sppb_rgb/router/router.dart';
 import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
 
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<LabelImagesBloc>()),
         BlocProvider(create: (context) => sl<ViewCapturedImagesBloc>()),
         BlocProvider(
-            create: (context) => sl<Yolo8TestBloc>()..add(LoadModels())),
+            create: (context) => sl<Yolo8SegTestBloc>()..add(LoadModels())),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
