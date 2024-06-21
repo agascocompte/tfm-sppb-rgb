@@ -7,10 +7,8 @@ import 'package:sppb_rgb/models/segmentator/segmentator.dart';
 
 class Yolo8VisionSegmentator extends Segmentator {
   FlutterVision? vision;
-  Stopwatch? stopwatch;
 
   Yolo8VisionSegmentator() {
-    stopwatch = Stopwatch();
     vision = FlutterVision();
   }
 
@@ -20,8 +18,8 @@ class Yolo8VisionSegmentator extends Segmentator {
       labels: 'assets/yolo8/labels.txt',
       modelPath: 'assets/yolo8/yolov8n-seg.tflite',
       modelVersion: "yolov8seg",
-      quantization: false,
-      numThreads: 4,
+      quantization: true,
+      numThreads: 8,
       useGpu: true,
     );
     isLoaded = true;
@@ -29,23 +27,25 @@ class Yolo8VisionSegmentator extends Segmentator {
 
   @override
   Future<List<Map<String, dynamic>>?> processImage(XFile file) async {
-    stopwatch!.reset();
-    stopwatch!.start();
     Uint8List bytes = await file.readAsBytes();
 
     final image = await decodeImageFromList(bytes);
-    final result = await vision?.yoloOnImage(
-      bytesList: bytes,
-      imageHeight: image.height,
-      imageWidth: image.width,
-      iouThreshold: 0.8,
-      confThreshold: 0.4,
-      classThreshold: 0.5,
-    );
 
-    stopwatch!.stop();
-    timeSpent = stopwatch!.elapsedMilliseconds;
-    return result;
+    try {
+      final result = await vision?.yoloOnImage(
+        bytesList: bytes,
+        imageHeight: image.height,
+        imageWidth: image.width,
+        iouThreshold: 0.8,
+        confThreshold: 0.4,
+        classThreshold: 0.5,
+      );
+      return result;
+    } catch (e) {
+      return Future.value([
+        {'error': 'Platform down'}
+      ]);
+    }
   }
 
   @override

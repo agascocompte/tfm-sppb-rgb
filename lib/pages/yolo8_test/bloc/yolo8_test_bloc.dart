@@ -54,20 +54,25 @@ class Yolo8TestBloc extends Bloc<Yolo8TestEvent, Yolo8TestState> {
       imageHeight: image.height,
     )));
 
+    Stopwatch stopwatch = Stopwatch();
+    stopwatch.start();
     var result = await state.stateData.segmentator!.processImage(event.image);
     if (result != null && result.isNotEmpty) {
-    } else {
-      emit(SegmentationFailed(
-          state.stateData.copyWith(label: "No segmentation found")));
-    }
-
-    if (result != null && result.isNotEmpty) {
+      if (result[0].keys.contains('error')) {
+        emit(SegmentationFailed(
+            state.stateData.copyWith(label: result[0]['error'])));
+      }
       emit(SegmentationResultsUpdated(state.stateData.copyWith(
         segmentatorResults: result,
       )));
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        stopwatch.stop();
+        state.stateData.segmentator!.timeSpent = stopwatch.elapsedMilliseconds;
         add(ProcessSegmentedImage());
       });
+    } else {
+      emit(SegmentationFailed(
+          state.stateData.copyWith(label: "No segmentation found")));
     }
   }
 

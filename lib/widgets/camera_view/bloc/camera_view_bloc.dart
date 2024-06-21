@@ -22,7 +22,7 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
       InitializeCameras event, Emitter<CameraViewState> emit) async {
     List<CameraDescription> cameras = await availableCameras();
     CameraController cameraController =
-        CameraController(cameras[0], ResolutionPreset.high);
+        CameraController(cameras[0], ResolutionPreset.medium);
     await cameraController.initialize();
     emit(CamerasInitialized(state.stateData
         .copyWith(cameras: cameras, cameraController: cameraController)));
