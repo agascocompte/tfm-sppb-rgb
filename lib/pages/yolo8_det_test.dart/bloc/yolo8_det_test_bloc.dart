@@ -80,24 +80,18 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
     Uint8List imageData = await state.stateData.capturedImage!.readAsBytes();
     img.Image image = img.decodeImage(imageData)!;
 
-    double factorX = event.size.width / (state.stateData.imageWidth);
-    double imgRatio = state.stateData.imageWidth / state.stateData.imageHeight;
-    double newWidth = state.stateData.imageWidth * factorX;
-    double newHeight = newWidth / imgRatio;
-    double factorY = newHeight / (state.stateData.imageHeight);
+    double scaleX = (event.size.width + 20) / state.stateData.imageWidth;
+    double scaleY = (event.size.height - 100) / state.stateData.imageHeight;
 
-    double pady = (event.size.height - newHeight) / 2;
-
-    int left = (state.stateData.detectorResults[0]["box"][1] * factorX).toInt();
-    int top =
-        (state.stateData.detectorResults[0]["box"][0] * factorY + pady).toInt();
+    int left = (state.stateData.detectorResults[0]["box"][1] * scaleX).toInt();
+    int top = (state.stateData.detectorResults[0]["box"][0] * scaleY).toInt();
     int width = ((state.stateData.detectorResults[0]["box"][3] -
                 state.stateData.detectorResults[0]["box"][1]) *
-            factorX)
+            scaleX)
         .toInt();
     int height = ((state.stateData.detectorResults[0]["box"][2] -
                 state.stateData.detectorResults[0]["box"][0]) *
-            factorY)
+            scaleY)
         .toInt();
 
 // Recortar la imagen dentro de la bounding box
@@ -117,8 +111,7 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
         x: 0, y: startY, width: resizedCroppedImage.width, height: height);
 
     print("Image prepared. Predicting...");
-    // Guarda la imagen final
-    _saveImage(halfImage);
+    //_saveImage(halfImage, 'cropped');
 
     Map<String, dynamic> result =
         state.stateData.classifier!.predict(halfImage);
@@ -137,9 +130,9 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
     print(result);
   }
 
-  _saveImage(image) async {
+  _saveImage(image, name) async {
     String dir = (await getTemporaryDirectory()).path;
-    String filename = "$dir/screenshot.png";
+    String filename = "$dir/$name.png";
     File finalImageFile = File(filename);
     await finalImageFile.writeAsBytes(img.encodePng(image));
 
