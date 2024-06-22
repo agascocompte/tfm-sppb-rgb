@@ -23,14 +23,15 @@ part 'yolo8_seg_test_state.dart';
 @injectable
 class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
   Yolo8SegTestBloc() : super(Yolo8SegTestInitial()) {
-    on<Yolo8SegTestEvent>(_loadModels);
+    on<LoadSegModels>(_loadModels);
     on<ProcessImage>(_processImage);
     on<ProcessSegmentedImage>(_processSegmentedImage);
   }
 
   FutureOr<void> _loadModels(
       Yolo8SegTestEvent event, Emitter<Yolo8SegTestState> emit) async {
-    Classifier classifier = MobileNetV3SmallClassifier();
+    Classifier classifier =
+        MobileNetV3SmallClassifier(modelName: 'mobile_net_v3_small_opt');
     Segmentator segmentator = Yolo8VisionSegmentator();
 
     await Future.wait([

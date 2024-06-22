@@ -6,15 +6,18 @@ import 'package:sppb_rgb/models/classifier/classifier.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class MobileNetV3SmallClassifier extends Classifier {
+  final String modelName;
   Stopwatch? stopwatch;
 
-  MobileNetV3SmallClassifier() {
+  MobileNetV3SmallClassifier({
+    required this.modelName,
+  }) {
     stopwatch = Stopwatch();
   }
   @override
   Future<void> loadModel() async {
-    interpreter = await Interpreter.fromAsset(
-        'assets/models/mobile_net_v3_small_opt.tflite');
+    interpreter =
+        await Interpreter.fromAsset('assets/models/$modelName.tflite');
     isLoaded = true;
   }
 
