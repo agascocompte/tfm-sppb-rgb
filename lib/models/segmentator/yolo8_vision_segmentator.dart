@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
-import 'package:flutter/material.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:sppb_rgb/models/segmentator/segmentator.dart';
 
@@ -27,7 +26,7 @@ class Yolo8VisionSegmentator extends Segmentator {
 
   @override
   Future<List<Map<String, dynamic>>?> processImage(img.Image file) async {
-    Uint8List bytes = Uint8List.fromList(img.encodeJpg(file));
+    Uint8List bytes = Uint8List.fromList(img.encodePng(file));
 
     try {
       final result = await vision?.yoloOnImage(

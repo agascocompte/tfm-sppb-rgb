@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 
 class PolygonPainter extends CustomPainter {
   final List<Map<String, double>> points;
-  final double offset;
 
   PolygonPainter({
     required this.points,
-    this.offset = 0,
   });
 
   @override
@@ -18,9 +16,9 @@ class PolygonPainter extends CustomPainter {
 
     final path = Path();
     if (points.isNotEmpty) {
-      path.moveTo(-points[0]['y']! + offset, points[0]['x']!);
+      path.moveTo(points[0]['x']!, points[0]['y']!);
       for (var i = 1; i < points.length; i++) {
-        path.lineTo(-points[i]['y']! + offset, points[i]['x']!);
+        path.lineTo(points[i]['x']!, points[i]['y']!);
       }
       path.close();
     }

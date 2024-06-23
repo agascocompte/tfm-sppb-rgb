@@ -96,6 +96,7 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
     img.Image resizedImage =
         img.copyResize(originalImage, width: 224, height: 448);
 
+    _saveImage(resizedImage, 'screenshow_resized');
     // Calcula la altura de la mitad inferior
     int startY = resizedImage.height ~/ 2;
     int height = resizedImage.height - startY;
@@ -106,7 +107,7 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
 
     print("Image prepared. Predicting...");
     // Guarda la imagen final
-    _saveImage(halfImage);
+    _saveImage(halfImage, 'screenshot_half');
 
     Map<String, dynamic> result =
         state.stateData.classifier!.predict(halfImage);
@@ -125,9 +126,9 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
     print(result);
   }
 
-  _saveImage(image) async {
+  _saveImage(image, name) async {
     String dir = (await getTemporaryDirectory()).path;
-    String filename = "$dir/screenshot.png";
+    String filename = "$dir/$name.png";
     File finalImageFile = File(filename);
     await finalImageFile.writeAsBytes(img.encodePng(image));
 

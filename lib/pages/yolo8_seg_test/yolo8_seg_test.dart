@@ -86,8 +86,6 @@ class Yolo8SegTestPage extends StatelessWidget {
     double newHeight = newWidth / imgRatio;
     double factorY = newHeight / (imageHeight);
 
-    double pady = (screen.height - newHeight - 80) / 3;
-
     return state.stateData.segmentatorResults.map((result) {
       return result["box"] != null
           ? RepaintBoundary(
@@ -95,31 +93,30 @@ class Yolo8SegTestPage extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned(
-                    left: result["box"][1] * factorX,
-                    top: result["box"][0] * factorY + pady,
-                    width: (result["box"][3] - result["box"][1]) * factorX,
-                    height: (result["box"][2] - result["box"][0]) * factorY,
+                    left: result["box"][0] * factorX,
+                    top: result["box"][1] * factorY,
+                    width: (result["box"][2] - result["box"][0]) * factorX,
+                    height: (result["box"][3] - result["box"][1]) * factorY,
                     child: Container(
                       color: Colors.black,
                     ),
                   ),
                   Positioned(
-                      left: result["box"][1] * factorX,
-                      top: result["box"][0] * factorY + pady,
-                      width: (result["box"][3] - result["box"][1]) * factorX,
-                      height: (result["box"][2] - result["box"][0]) * factorY,
+                      left: result["box"][0] * factorX,
+                      top: result["box"][1] * factorY,
+                      width: (result["box"][2] - result["box"][0]) * factorX,
+                      height: (result["box"][3] - result["box"][1]) * factorY,
                       child: CustomPaint(
                         painter: PolygonPainter(
-                            points:
-                                (result["polygons"] as List<dynamic>).map((e) {
-                              Map<String, double> xy =
-                                  Map<String, double>.from(e);
-                              xy['x'] = (xy['x'] as double) * factorX;
-                              xy['y'] = (xy['y'] as double) * factorY;
-                              return xy;
-                            }).toList(),
-                            offset: (result["box"][3] - result["box"][1]) *
-                                factorX),
+                          points:
+                              (result["polygons"] as List<dynamic>).map((e) {
+                            Map<String, double> xy =
+                                Map<String, double>.from(e);
+                            xy['x'] = (xy['x'] as double) * factorX;
+                            xy['y'] = (xy['y'] as double) * factorY;
+                            return xy;
+                          }).toList(),
+                        ),
                       )),
                 ],
               ),

@@ -24,39 +24,44 @@ class CameraView extends StatelessWidget {
       }
     }, builder: (context, state) {
       return state.stateData.cameraController != null
-          ? Stack(
+          ? Column(
               children: [
-                CameraPreview(state.stateData.cameraController!),
-                Positioned(
-                  bottom: 16,
-                  left: MediaQuery.of(context).size.width / 2 - 30,
-                  child: FloatingActionButton(
-                    heroTag: 'onCapture',
-                    onPressed: onCapture,
-                    child: const Icon(Icons.camera),
-                  ),
-                ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    heroTag: 'switchCamera',
-                    onPressed: () =>
-                        context.read<CameraViewBloc>().add(SwitchCamera()),
-                    child: const Icon(Icons.switch_camera),
-                  ),
-                ),
-                if (viewCapturedImages)
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    child: FloatingActionButton(
-                      heroTag: 'viewCapturedImages',
-                      onPressed: () =>
-                          context.push(AppRouter.viewCapturedImages),
-                      child: const Icon(Icons.image_outlined),
+                Expanded(
+                    child: CameraPreview(state.stateData.cameraController!)),
+                Stack(
+                  children: [
+                    Positioned(
+                      bottom: 16,
+                      left: MediaQuery.of(context).size.width / 2 - 30,
+                      child: FloatingActionButton(
+                        heroTag: 'onCapture',
+                        onPressed: onCapture,
+                        child: const Icon(Icons.camera),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        heroTag: 'switchCamera',
+                        onPressed: () =>
+                            context.read<CameraViewBloc>().add(SwitchCamera()),
+                        child: const Icon(Icons.switch_camera),
+                      ),
+                    ),
+                    if (viewCapturedImages)
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        child: FloatingActionButton(
+                          heroTag: 'viewCapturedImages',
+                          onPressed: () =>
+                              context.push(AppRouter.viewCapturedImages),
+                          child: const Icon(Icons.image_outlined),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             )
           : const Center(child: Text("Cámara no inicializada"));
