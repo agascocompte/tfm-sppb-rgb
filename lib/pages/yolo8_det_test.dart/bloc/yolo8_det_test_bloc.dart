@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -78,25 +77,25 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
 
   FutureOr<void> _processDetectedImage(
       ProcessDetectedImage event, Emitter<Yolo8DetTestState> emit) async {
-    double scaleX = (event.size.width + 20) / state.stateData.imageWidth;
-    double scaleY = (event.size.height - 100) / state.stateData.imageHeight;
+    double scaleX = (event.size.width) / state.stateData.imageWidth;
+    double scaleY = (event.size.height) / state.stateData.imageHeight;
 
-    int left = (state.stateData.detectorResults[0]["box"][1] * scaleX).toInt();
-    int top = (state.stateData.detectorResults[0]["box"][0] * scaleY).toInt();
-    int width = ((state.stateData.detectorResults[0]["box"][3] -
-                state.stateData.detectorResults[0]["box"][1]) *
+    int left = (state.stateData.detectorResults[0]["box"][0] * scaleX).toInt();
+    int top = (state.stateData.detectorResults[0]["box"][1] * scaleY).toInt();
+    int width = ((state.stateData.detectorResults[0]["box"][2] -
+                state.stateData.detectorResults[0]["box"][0]) *
             scaleX)
         .toInt();
-    int height = ((state.stateData.detectorResults[0]["box"][2] -
-                state.stateData.detectorResults[0]["box"][0]) *
+    int height = ((state.stateData.detectorResults[0]["box"][3] -
+                state.stateData.detectorResults[0]["box"][1]) *
             scaleY)
         .toInt();
 
-// Recortar la imagen dentro de la bounding box
+    // Recortar la imagen dentro de la bounding box
     img.Image croppedImage = img.copyCrop(state.stateData.capturedImage!,
         x: left, y: top, width: width, height: height);
 
-// Opcional: Redimensionar la imagen recortada si es necesario
+    // Opcional: Redimensionar la imagen recortada si es necesario
     img.Image resizedCroppedImage =
         img.copyResize(croppedImage, width: 224, height: 448);
 
@@ -109,7 +108,7 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
         x: 0, y: startY, width: resizedCroppedImage.width, height: height);
 
     print("Image prepared. Predicting...");
-    //_saveImage(halfImage, 'cropped');
+    _saveImage(halfImage, 'cropped');
 
     Map<String, dynamic> result =
         state.stateData.classifier!.predict(halfImage);
