@@ -16,8 +16,8 @@ class MobileNetV3SmallClassifier extends Classifier {
   }
   @override
   Future<void> loadModel() async {
-    interpreter =
-        await Interpreter.fromAsset('assets/models/$modelName.tflite');
+    interpreter = await Interpreter.fromAsset('assets/models/$modelName.tflite',
+        options: InterpreterOptions()..threads = 4);
     isLoaded = true;
   }
 
