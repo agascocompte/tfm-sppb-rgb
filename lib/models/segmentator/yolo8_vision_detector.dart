@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:sppb_rgb/models/segmentator/segmentator.dart';
 
@@ -26,16 +25,14 @@ class Yolo8VisionDetector extends Segmentator {
   }
 
   @override
-  Future<List<Map<String, dynamic>>?> processImage(XFile file) async {
-    Uint8List bytes = await file.readAsBytes();
-
-    final image = await decodeImageFromList(bytes);
+  Future<List<Map<String, dynamic>>?> processImage(img.Image file) async {
+    Uint8List bytes = Uint8List.fromList(img.encodeJpg(file));
 
     try {
       final result = await vision?.yoloOnImage(
         bytesList: bytes,
-        imageHeight: image.height,
-        imageWidth: image.width,
+        imageHeight: file.height,
+        imageWidth: file.width,
         iouThreshold: 0.8,
         confThreshold: 0.4,
         classThreshold: 0.5,

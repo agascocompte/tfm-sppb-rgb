@@ -10,7 +10,7 @@ class ImageUtils {
     final int uvRowStride = cameraImage.planes[1].bytesPerRow;
     final int uvPixelStride = cameraImage.planes[1].bytesPerPixel!;
 
-    final image = img.Image(width: width, height: height);
+    final image = img.Image(width: height, height: width);
 
     for (int w = 0; w < width; w++) {
       for (int h = 0; h < height; h++) {
@@ -22,22 +22,20 @@ class ImageUtils {
         final u = cameraImage.planes[1].bytes[uvIndex];
         final v = cameraImage.planes[2].bytes[uvIndex];
 
-        final rgb = ImageUtils.yuv2rgb(y, u, v);
+        List<int> colorRgb = ImageUtils.yuv2rgb(y, u, v);
+        int r = colorRgb[0];
+        int g = colorRgb[1];
+        int b = colorRgb[2];
 
-        // Descomponer el valor RGB en sus componentes
-        final r = (rgb >> 16) & 0xFF;
-        final g = (rgb >> 8) & 0xFF;
-        final b = rgb & 0xFF;
-
-        // Establecer el píxel en la imagen
-        image.setPixel(w, h, img.ColorRgb8(r, g, b));
+        image.data!.setPixelRgbSafe(height - h, w, r, g, b);
       }
     }
+
     return image;
   }
 
   /// Convert a single YUV pixel to RGB
-  static int yuv2rgb(int y, int u, int v) {
+  static List<int> yuv2rgb(int y, int u, int v) {
     // Convert yuv pixel to rgb
     int r = (y + v * 1436 / 1024 - 179).round();
     int g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91).round();
@@ -48,9 +46,6 @@ class ImageUtils {
     g = g.clamp(0, 255);
     b = b.clamp(0, 255);
 
-    return 0xff000000 |
-        ((b << 16) & 0xff0000) |
-        ((g << 8) & 0xff00) |
-        (r & 0xff);
+    return [r, g, b];
   }
 }

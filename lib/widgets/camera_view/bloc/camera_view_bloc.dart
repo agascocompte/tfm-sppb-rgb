@@ -15,14 +15,16 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     on<InitializeCameras>(_initCameras);
     on<SwitchCamera>(_switchCamera);
     on<BeginImageCapture>(_beginImageCapture);
-    on<TakePicture>(_takePicture);
+    on<BeginImageStreaming>(_beginImageStreaming);
+    on<UpdateIsImageProcessing>(_updateIsImageProcessing);
+    on<PictureCapturedEvent>(_handlePictureCaptured);
   }
 
   FutureOr<void> _initCameras(
       InitializeCameras event, Emitter<CameraViewState> emit) async {
     List<CameraDescription> cameras = await availableCameras();
     CameraController cameraController =
-        CameraController(cameras[0], ResolutionPreset.medium);
+        CameraController(cameras[0], ResolutionPreset.low);
     await cameraController.initialize();
     emit(CamerasInitialized(state.stateData
         .copyWith(cameras: cameras, cameraController: cameraController)));
@@ -83,9 +85,24 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     }
   }
 
-  FutureOr<void> _takePicture(
-      TakePicture event, Emitter<CameraViewState> emit) async {
-    XFile picture = await state.stateData.cameraController!.takePicture();
-    emit(PictureCaptured(state.stateData, picture: picture));
+  FutureOr<void> _updateIsImageProcessing(
+      UpdateIsImageProcessing event, Emitter<CameraViewState> emit) {
+    emit(IsImageProcessingUpdated(
+        state.stateData.copyWith(isProcessingImage: event.isImageProcessing)));
+  }
+
+  FutureOr<void> _beginImageStreaming(
+      BeginImageStreaming event, Emitter<CameraViewState> emit) async {
+    await state.stateData.cameraController!
+        .startImageStream((CameraImage image) {
+      if (!state.stateData.isProcessingImage) {
+        add(PictureCapturedEvent(image));
+      }
+    });
+  }
+
+  FutureOr<void> _handlePictureCaptured(
+      PictureCapturedEvent event, Emitter<CameraViewState> emit) async {
+    emit(PictureCaptured(state.stateData, picture: event.image));
   }
 }

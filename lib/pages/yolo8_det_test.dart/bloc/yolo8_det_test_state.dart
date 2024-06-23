@@ -5,7 +5,7 @@ class Yolo8DetTestStateData {
   final Segmentator? detector;
   final String label;
   final List<Map<String, dynamic>> detectorResults;
-  final XFile? capturedImage;
+  final img.Image? capturedImage;
   final int imageWidth;
   final int imageHeight;
 
@@ -24,7 +24,7 @@ class Yolo8DetTestStateData {
     Segmentator? detector,
     String? label,
     List<Map<String, dynamic>>? detectorResults,
-    XFile? capturedImage,
+    img.Image? capturedImage,
     int? imageWidth,
     int? imageHeight,
   }) {

@@ -5,7 +5,7 @@ class Yolo8SegTestStateData {
   final Segmentator? segmentator;
   final String label;
   final List<Map<String, dynamic>> segmentatorResults;
-  final XFile? capturedImage;
+  final img.Image? capturedImage;
   final int imageWidth;
   final int imageHeight;
   final GlobalKey previewContainer = GlobalKey();
@@ -25,7 +25,7 @@ class Yolo8SegTestStateData {
     Segmentator? segmentator,
     String? label,
     List<Map<String, dynamic>>? segmentatorResults,
-    XFile? capturedImage,
+    img.Image? capturedImage,
     int? imageWidth,
     int? imageHeight,
   }) {

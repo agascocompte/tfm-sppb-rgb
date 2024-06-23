@@ -14,6 +14,7 @@ import 'package:sppb_rgb/models/segmentator/yolo8_vision_detector.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:image/image.dart' as img;
+import 'package:sppb_rgb/utils/image_utils.dart';
 
 part 'yolo8_det_test_event.dart';
 part 'yolo8_det_test_state.dart';
@@ -45,17 +46,17 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
 
   FutureOr<void> _processImage(
       ProcessImage event, Emitter<Yolo8DetTestState> emit) async {
-    Uint8List bytes = await event.image.readAsBytes();
-    final image = await decodeImageFromList(bytes);
+    img.Image image = ImageUtils.convertYUV420ToImage(event.image);
+    _saveImage(image, 'YUV');
     emit(CapturedImageUpdate(state.stateData.copyWith(
-      capturedImage: event.image,
+      capturedImage: image,
       imageWidth: image.width,
       imageHeight: image.height,
     )));
 
     Stopwatch stopwatch = Stopwatch();
     stopwatch.start();
-    var result = await state.stateData.detector!.processImage(event.image);
+    var result = await state.stateData.detector!.processImage(image);
     if (result != null && result.isNotEmpty) {
       if (result[0].keys.contains('error')) {
         emit(DetectionFailed(
@@ -77,9 +78,6 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
 
   FutureOr<void> _processDetectedImage(
       ProcessDetectedImage event, Emitter<Yolo8DetTestState> emit) async {
-    Uint8List imageData = await state.stateData.capturedImage!.readAsBytes();
-    img.Image image = img.decodeImage(imageData)!;
-
     double scaleX = (event.size.width + 20) / state.stateData.imageWidth;
     double scaleY = (event.size.height - 100) / state.stateData.imageHeight;
 
@@ -95,8 +93,8 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
         .toInt();
 
 // Recortar la imagen dentro de la bounding box
-    img.Image croppedImage =
-        img.copyCrop(image, x: left, y: top, width: width, height: height);
+    img.Image croppedImage = img.copyCrop(state.stateData.capturedImage!,
+        x: left, y: top, width: width, height: height);
 
 // Opcional: Redimensionar la imagen recortada si es necesario
     img.Image resizedCroppedImage =

@@ -5,7 +5,7 @@ abstract class Yolo8DetTestEvent {}
 class LoadDetModels extends Yolo8DetTestEvent {}
 
 class ProcessImage extends Yolo8DetTestEvent {
-  final XFile image;
+  final CameraImage image;
   final Size size;
   ProcessImage({required this.image, required this.size});
 }

@@ -15,6 +15,9 @@ class Yolo8DetTestPage extends StatelessWidget {
       listener: (context, state) async {
         if (state is PictureCaptured) {
           context
+              .read<CameraViewBloc>()
+              .add(UpdateIsImageProcessing(isImageProcessing: true));
+          context
               .read<Yolo8DetTestBloc>()
               .add(ProcessImage(image: state.picture, size: size));
         }
@@ -23,16 +26,23 @@ class Yolo8DetTestPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("YOLOv8 Detection"),
         ),
-        body: BlocBuilder<Yolo8DetTestBloc, Yolo8DetTestState>(
-            builder: (context, state) {
+        body: BlocConsumer<Yolo8DetTestBloc, Yolo8DetTestState>(
+            listener: (context, state) {
+          if (state is PredictionSuccess || state is DetectionFailed) {
+            context
+                .read<CameraViewBloc>()
+                .add(UpdateIsImageProcessing(isImageProcessing: false));
+          }
+        }, builder: (context, state) {
           return ((state.stateData.detector?.isLoaded ?? false) &&
                   (state.stateData.classifier?.isLoaded ?? false))
               ? Stack(
                   fit: StackFit.expand,
                   children: [
                     CameraView(
-                      onCapture: () =>
-                          context.read<CameraViewBloc>().add(TakePicture()),
+                      onCapture: () => context
+                          .read<CameraViewBloc>()
+                          .add(BeginImageStreaming()),
                     ),
                     Positioned(
                       top: 20,

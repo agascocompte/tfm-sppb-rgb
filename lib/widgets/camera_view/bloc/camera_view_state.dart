@@ -4,22 +4,26 @@ class CameraViewStateData {
   List<CameraDescription>? cameras;
   CameraController? cameraController;
   bool isRearCamera;
+  bool isProcessingImage;
 
   CameraViewStateData({
     this.cameras,
     this.cameraController,
     this.isRearCamera = true,
+    this.isProcessingImage = false,
   });
 
   CameraViewStateData copyWith({
     List<CameraDescription>? cameras,
     CameraController? cameraController,
     bool? isRearCamera,
+    bool? isProcessingImage,
   }) {
     return CameraViewStateData(
       cameras: cameras ?? this.cameras,
       cameraController: cameraController ?? this.cameraController,
       isRearCamera: isRearCamera ?? this.isRearCamera,
+      isProcessingImage: isProcessingImage ?? this.isProcessingImage,
     );
   }
 }
@@ -56,7 +60,12 @@ class GatheringImagesCompleted extends CameraViewState {
 }
 
 class PictureCaptured extends CameraViewState {
-  final XFile picture;
+  final CameraImage picture;
   PictureCaptured(CameraViewStateData stateData, {required this.picture})
+      : super(stateData: stateData);
+}
+
+class IsImageProcessingUpdated extends CameraViewState {
+  IsImageProcessingUpdated(CameraViewStateData stateData)
       : super(stateData: stateData);
 }

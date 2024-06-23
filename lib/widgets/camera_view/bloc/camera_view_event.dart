@@ -12,4 +12,15 @@ class BeginImageCapture extends CameraViewEvent {
   BeginImageCapture({required this.label, required this.capturingTime});
 }
 
-class TakePicture extends CameraViewEvent {}
+class BeginImageStreaming extends CameraViewEvent {}
+
+class UpdateIsImageProcessing extends CameraViewEvent {
+  bool isImageProcessing;
+  UpdateIsImageProcessing({required this.isImageProcessing});
+}
+
+class PictureCapturedEvent extends CameraViewEvent {
+  final CameraImage image;
+
+  PictureCapturedEvent(this.image);
+}

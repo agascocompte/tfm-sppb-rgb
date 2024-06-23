@@ -16,6 +16,9 @@ class Yolo8SegTestPage extends StatelessWidget {
       listener: (context, state) async {
         if (state is PictureCaptured) {
           context
+              .read<CameraViewBloc>()
+              .add(UpdateIsImageProcessing(isImageProcessing: true));
+          context
               .read<Yolo8SegTestBloc>()
               .add(ProcessImage(image: state.picture));
         }
@@ -24,16 +27,23 @@ class Yolo8SegTestPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("YOLOv8 Segmentation"),
         ),
-        body: BlocBuilder<Yolo8SegTestBloc, Yolo8SegTestState>(
-            builder: (context, state) {
+        body: BlocConsumer<Yolo8SegTestBloc, Yolo8SegTestState>(
+            listener: (context, state) {
+          if (state is PredictionSuccess || state is SegmentationFailed) {
+            context
+                .read<CameraViewBloc>()
+                .add(UpdateIsImageProcessing(isImageProcessing: false));
+          }
+        }, builder: (context, state) {
           return ((state.stateData.segmentator?.isLoaded ?? false) &&
                   (state.stateData.classifier?.isLoaded ?? false))
               ? Stack(
                   fit: StackFit.expand,
                   children: [
                     CameraView(
-                      onCapture: () =>
-                          context.read<CameraViewBloc>().add(TakePicture()),
+                      onCapture: () => context
+                          .read<CameraViewBloc>()
+                          .add(BeginImageStreaming()),
                     ),
                     ...displayBoxesAroundRecognizedObjects(size, state),
                     Positioned(
@@ -79,37 +89,42 @@ class Yolo8SegTestPage extends StatelessWidget {
     double pady = (screen.height - newHeight - 80) / 3;
 
     return state.stateData.segmentatorResults.map((result) {
-      return RepaintBoundary(
-        key: state.stateData.previewContainer,
-        child: Stack(
-          children: [
-            Positioned(
-              left: result["box"][1] * factorX,
-              top: result["box"][0] * factorY + pady,
-              width: (result["box"][3] - result["box"][1]) * factorX,
-              height: (result["box"][2] - result["box"][0]) * factorY,
-              child: Container(
-                color: Colors.black,
+      return result["box"] != null
+          ? RepaintBoundary(
+              key: state.stateData.previewContainer,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: result["box"][1] * factorX,
+                    top: result["box"][0] * factorY + pady,
+                    width: (result["box"][3] - result["box"][1]) * factorX,
+                    height: (result["box"][2] - result["box"][0]) * factorY,
+                    child: Container(
+                      color: Colors.black,
+                    ),
+                  ),
+                  Positioned(
+                      left: result["box"][1] * factorX,
+                      top: result["box"][0] * factorY + pady,
+                      width: (result["box"][3] - result["box"][1]) * factorX,
+                      height: (result["box"][2] - result["box"][0]) * factorY,
+                      child: CustomPaint(
+                        painter: PolygonPainter(
+                            points:
+                                (result["polygons"] as List<dynamic>).map((e) {
+                              Map<String, double> xy =
+                                  Map<String, double>.from(e);
+                              xy['x'] = (xy['x'] as double) * factorX;
+                              xy['y'] = (xy['y'] as double) * factorY;
+                              return xy;
+                            }).toList(),
+                            offset: (result["box"][3] - result["box"][1]) *
+                                factorX),
+                      )),
+                ],
               ),
-            ),
-            Positioned(
-                left: result["box"][1] * factorX,
-                top: result["box"][0] * factorY + pady,
-                width: (result["box"][3] - result["box"][1]) * factorX,
-                height: (result["box"][2] - result["box"][0]) * factorY,
-                child: CustomPaint(
-                  painter: PolygonPainter(
-                      points: (result["polygons"] as List<dynamic>).map((e) {
-                        Map<String, double> xy = Map<String, double>.from(e);
-                        xy['x'] = (xy['x'] as double) * factorX;
-                        xy['y'] = (xy['y'] as double) * factorY;
-                        return xy;
-                      }).toList(),
-                      offset: (result["box"][3] - result["box"][1]) * factorX),
-                )),
-          ],
-        ),
-      );
+            )
+          : Container();
     }).toList();
   }
 }

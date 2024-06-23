@@ -17,6 +17,8 @@ import 'package:sppb_rgb/models/segmentator/yolo8_vision_segmentator.dart';
 import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
 
+import 'package:sppb_rgb/utils/image_utils.dart';
+
 part 'yolo8_seg_test_event.dart';
 part 'yolo8_seg_test_state.dart';
 
@@ -47,17 +49,16 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
 
   FutureOr<void> _processImage(
       ProcessImage event, Emitter<Yolo8SegTestState> emit) async {
-    Uint8List bytes = await event.image.readAsBytes();
-    final image = await decodeImageFromList(bytes);
+    img.Image? image = ImageUtils.convertYUV420ToImage(event.image);
     emit(CapturedImageUpdate(state.stateData.copyWith(
-      capturedImage: event.image,
+      capturedImage: image,
       imageWidth: image.width,
       imageHeight: image.height,
     )));
 
     Stopwatch stopwatch = Stopwatch();
     stopwatch.start();
-    var result = await state.stateData.segmentator!.processImage(event.image);
+    var result = await state.stateData.segmentator!.processImage(image);
     if (result != null && result.isNotEmpty) {
       if (result[0].keys.contains('error')) {
         emit(SegmentationFailed(
