@@ -11,7 +11,7 @@ class Yolo8DetTestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    return BlocListener<CameraViewBloc, CameraViewState>(
+    return BlocConsumer<CameraViewBloc, CameraViewState>(
       listener: (context, state) async {
         if (state is PictureCaptured) {
           context
@@ -22,51 +22,57 @@ class Yolo8DetTestPage extends StatelessWidget {
               .add(ProcessImage(image: state.picture, size: size));
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Detection example"),
-        ),
-        body: BlocConsumer<Yolo8DetTestBloc, Yolo8DetTestState>(
-            listener: (context, state) {
-          if (state is PredictionSuccess || state is DetectionFailed) {
-            context
-                .read<CameraViewBloc>()
-                .add(UpdateIsImageProcessing(isImageProcessing: false));
-          }
-        }, builder: (context, state) {
-          return ((state.stateData.detector?.isLoaded ?? false) &&
-                  (state.stateData.classifier?.isLoaded ?? false))
-              ? Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CameraView(
-                      onCapture: () => context
-                          .read<CameraViewBloc>()
-                          .add(BeginImageStreaming()),
-                    ),
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: Container(
-                        height: 100,
-                        width: 360,
-                        color: Colors.black.withOpacity(0.5),
-                        child: Center(
-                          child: Text(
-                            state.stateData.label,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 20),
+      builder: (context, cameraState) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Detection example"),
+          ),
+          body: BlocConsumer<Yolo8DetTestBloc, Yolo8DetTestState>(
+              listener: (context, state) {
+            if (state is PredictionSuccess || state is DetectionFailed) {
+              context
+                  .read<CameraViewBloc>()
+                  .add(UpdateIsImageProcessing(isImageProcessing: false));
+            }
+          }, builder: (context, state) {
+            return ((state.stateData.detector?.isLoaded ?? false) &&
+                    (state.stateData.classifier?.isLoaded ?? false))
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CameraView(
+                        onCapture: () => !cameraState.stateData.isStreaming
+                            ? context
+                                .read<CameraViewBloc>()
+                                .add(BeginImageStreaming())
+                            : context
+                                .read<CameraViewBloc>()
+                                .add(StopImageStreaming()),
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 20,
+                        child: Container(
+                          height: 100,
+                          width: 360,
+                          color: Colors.black.withOpacity(0.5),
+                          child: Center(
+                            child: Text(
+                              state.stateData.label,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-              : const Center(
-                  child: Text("Models not loaded, waiting for them"),
-                );
-        }),
-      ),
+                    ],
+                  )
+                : const Center(
+                    child: Text("Models not loaded, waiting for them"),
+                  );
+          }),
+        );
+      },
     );
   }
 }

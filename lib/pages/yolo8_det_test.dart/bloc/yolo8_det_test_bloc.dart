@@ -71,7 +71,7 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
       });
     } else {
       emit(DetectionFailed(
-          state.stateData.copyWith(label: "No segmentation found")));
+          state.stateData.copyWith(label: "No detection found")));
     }
   }
 
