@@ -91,17 +91,17 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
             scaleY)
         .toInt();
 
-    _saveImage(state.stateData.capturedImage, 'full');
+    //_saveImage(state.stateData.capturedImage, 'full');
     // Recortar la imagen dentro de la bounding box
     img.Image croppedImage = img.copyCrop(state.stateData.capturedImage!,
         x: left, y: top, width: width, height: height);
 
-    _saveImage(croppedImage, 'bbox');
+    //_saveImage(croppedImage, 'bbox');
     // Opcional: Redimensionar la imagen recortada si es necesario
     img.Image resizedCroppedImage =
         img.copyResize(croppedImage, width: 224, height: 448);
 
-    _saveImage(resizedCroppedImage, 'bbox_resized');
+    //_saveImage(resizedCroppedImage, 'bbox_resized');
     // Calcula la altura de la mitad inferior
     int startY = resizedCroppedImage.height ~/ 2;
     height = resizedCroppedImage.height - startY;
@@ -110,8 +110,7 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
     img.Image halfImage = img.copyCrop(resizedCroppedImage,
         x: 0, y: startY, width: resizedCroppedImage.width, height: height);
 
-    print("Image prepared. Predicting...");
-    _saveImage(halfImage, 'cropped');
+    //_saveImage(halfImage, 'cropped');
 
     Map<String, dynamic> result =
         state.stateData.classifier!.predict(halfImage);
@@ -127,7 +126,6 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
                     state.stateData.classifier!.timeSpent)
                 .toString() +
             " ms")));
-    print(result);
   }
 
   _saveImage(image, name) async {
@@ -136,6 +134,6 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
     File finalImageFile = File(filename);
     await finalImageFile.writeAsBytes(img.encodePng(image));
 
-    print("Imagen final guardada en: $filename");
+    //print("Imagen final guardada en: $filename");
   }
 }

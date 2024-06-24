@@ -58,6 +58,5 @@ class RawTestBloc extends Bloc<RawTestEvent, RawTestState> {
             result['probabilities']
                 .map((prob) => (prob * 100).toStringAsFixed(2))
                 .join(", "))));
-    print(result);
   }
 }

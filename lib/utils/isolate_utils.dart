@@ -5,7 +5,7 @@ import 'package:sppb_rgb/utils/image_utils.dart';
 import 'package:image/image.dart' as img;
 
 class IsolateUtils {
-  static const String DEBUG_NAME = "InferenceIsolate";
+  static const String debugName = "InferenceIsolate";
 
   late Isolate _isolate;
   final ReceivePort _receivePort = ReceivePort();
@@ -17,7 +17,7 @@ class IsolateUtils {
     _isolate = await Isolate.spawn<SendPort>(
       entryPoint,
       _receivePort.sendPort,
-      debugName: DEBUG_NAME,
+      debugName: debugName,
     );
 
     _sendPort = await _receivePort.first;

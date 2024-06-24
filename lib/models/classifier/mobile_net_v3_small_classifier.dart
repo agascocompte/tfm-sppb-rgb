@@ -40,7 +40,6 @@ class MobileNetV3SmallClassifier extends Classifier {
 
       interpreter!.run(inputTensor, output);
     } catch (e) {
-      print(e);
       return {'error': e};
     }
 

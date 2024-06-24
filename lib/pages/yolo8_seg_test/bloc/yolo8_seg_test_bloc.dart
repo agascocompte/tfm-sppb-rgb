@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sppb_rgb/models/classifier/classifier.dart';
 import 'package:sppb_rgb/models/classifier/mobile_net_v3_small_classifier.dart';
 import 'package:sppb_rgb/models/segmentator/segmentator.dart';
@@ -96,7 +94,7 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
     img.Image resizedImage =
         img.copyResize(originalImage, width: 224, height: 448);
 
-    _saveImage(resizedImage, 'screenshow_resized');
+    //_saveImage(resizedImage, 'screenshow_resized');
     // Calcula la altura de la mitad inferior
     int startY = resizedImage.height ~/ 2;
     int height = resizedImage.height - startY;
@@ -105,9 +103,8 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
     img.Image halfImage = img.copyCrop(resizedImage,
         x: 0, y: startY, width: resizedImage.width, height: height);
 
-    print("Image prepared. Predicting...");
     // Guarda la imagen final
-    _saveImage(halfImage, 'screenshot_half');
+    //_saveImage(halfImage, 'screenshot_half');
 
     Map<String, dynamic> result =
         state.stateData.classifier!.predict(halfImage);
@@ -123,15 +120,14 @@ class Yolo8SegTestBloc extends Bloc<Yolo8SegTestEvent, Yolo8SegTestState> {
                     state.stateData.classifier!.timeSpent)
                 .toString() +
             " ms")));
-    print(result);
   }
 
-  _saveImage(image, name) async {
-    String dir = (await getTemporaryDirectory()).path;
-    String filename = "$dir/$name.png";
-    File finalImageFile = File(filename);
-    await finalImageFile.writeAsBytes(img.encodePng(image));
+  // _saveImage(image, name) async {
+  //   String dir = (await getTemporaryDirectory()).path;
+  //   String filename = "$dir/$name.png";
+  //   File finalImageFile = File(filename);
+  //   await finalImageFile.writeAsBytes(img.encodePng(image));
 
-    print("Imagen final guardada en: $filename");
-  }
+  //   print("Imagen final guardada en: $filename");
+  // }
 }
