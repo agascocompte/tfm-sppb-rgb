@@ -1,41 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sppb_rgb/pages/yolo8_det_test.dart/bloc/yolo8_det_test_bloc.dart';
+import 'package:sppb_rgb/pages/raw_test/bloc/raw_test_bloc.dart';
 import 'package:sppb_rgb/widgets/camera_view/bloc/camera_view_bloc.dart';
 import 'package:sppb_rgb/widgets/camera_view/camera_view.dart';
 
-class Yolo8DetTestPage extends StatelessWidget {
-  const Yolo8DetTestPage({super.key});
+class RawTestPage extends StatelessWidget {
+  const RawTestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
     return BlocListener<CameraViewBloc, CameraViewState>(
       listener: (context, state) async {
         if (state is PictureCaptured) {
           context
               .read<CameraViewBloc>()
               .add(UpdateIsImageProcessing(isImageProcessing: true));
-          context
-              .read<Yolo8DetTestBloc>()
-              .add(ProcessImage(image: state.picture, size: size));
+          context.read<RawTestBloc>().add(ProcessImage(image: state.picture));
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Detection example"),
+          title: const Text("Raw prediction example"),
         ),
-        body: BlocConsumer<Yolo8DetTestBloc, Yolo8DetTestState>(
-            listener: (context, state) {
-          if (state is PredictionSuccess || state is DetectionFailed) {
+        body:
+            BlocConsumer<RawTestBloc, RawTestState>(listener: (context, state) {
+          if (state is PredictionSuccess) {
             context
                 .read<CameraViewBloc>()
                 .add(UpdateIsImageProcessing(isImageProcessing: false));
           }
         }, builder: (context, state) {
-          return ((state.stateData.detector?.isLoaded ?? false) &&
-                  (state.stateData.classifier?.isLoaded ?? false))
+          return ((state.stateData.classifier?.isLoaded ?? false))
               ? Stack(
                   fit: StackFit.expand,
                   children: [

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sppb_rgb/di/dependency_injector.dart';
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart';
@@ -13,8 +12,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //debugPaintSizeEnabled = true;
   configureDependencies('dev');
-  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-  //     .then((value) => runApp(const MyApp()));
   runApp(const MyApp());
 }
 

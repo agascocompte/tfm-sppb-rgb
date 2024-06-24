@@ -25,7 +25,7 @@ class Yolo8SegTestPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("YOLOv8 Segmentation"),
+          title: const Text("Segmentation example"),
         ),
         body: BlocConsumer<Yolo8SegTestBloc, Yolo8SegTestState>(
             listener: (context, state) {

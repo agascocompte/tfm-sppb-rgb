@@ -11,6 +11,7 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart' as _i3;
+import 'package:sppb_rgb/pages/raw_test/bloc/raw_test_bloc.dart' as _i8;
 import 'package:sppb_rgb/pages/view_captured_images/bloc/view_captured_images_bloc.dart'
     as _i4;
 import 'package:sppb_rgb/pages/yolo8_det_test.dart/bloc/yolo8_det_test_bloc.dart'
@@ -35,6 +36,7 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i5.Yolo8SegTestBloc>(() => _i5.Yolo8SegTestBloc());
     gh.factory<_i6.CameraViewBloc>(() => _i6.CameraViewBloc());
     gh.factory<_i7.Yolo8DetTestBloc>(() => _i7.Yolo8DetTestBloc());
+    gh.factory<_i8.RawTestBloc>(() => _i8.RawTestBloc());
     return this;
   }
 }
