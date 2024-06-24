@@ -13,8 +13,9 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //debugPaintSizeEnabled = true;
   configureDependencies('dev');
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((value) => runApp(const MyApp()));
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+  //     .then((value) => runApp(const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

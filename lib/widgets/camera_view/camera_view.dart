@@ -27,40 +27,39 @@ class CameraView extends StatelessWidget {
           ? Column(
               children: [
                 Expanded(
-                    child: CameraPreview(state.stateData.cameraController!)),
-                Stack(
-                  children: [
-                    Positioned(
-                      bottom: 16,
-                      left: MediaQuery.of(context).size.width / 2 - 30,
-                      child: FloatingActionButton(
-                        heroTag: 'onCapture',
-                        onPressed: onCapture,
-                        child: const Icon(Icons.camera),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'switchCamera',
-                        onPressed: () =>
-                            context.read<CameraViewBloc>().add(SwitchCamera()),
-                        child: const Icon(Icons.switch_camera),
-                      ),
-                    ),
-                    if (viewCapturedImages)
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        child: FloatingActionButton(
-                          heroTag: 'viewCapturedImages',
-                          onPressed: () =>
-                              context.push(AppRouter.viewCapturedImages),
-                          child: const Icon(Icons.image_outlined),
+                  child: CameraPreview(
+                    state.stateData.cameraController!,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            if (viewCapturedImages)
+                              FloatingActionButton(
+                                heroTag: 'viewCapturedImages',
+                                onPressed: () =>
+                                    context.push(AppRouter.viewCapturedImages),
+                                child: const Icon(Icons.image_outlined),
+                              ),
+                            FloatingActionButton(
+                              heroTag: 'onCapture',
+                              onPressed: onCapture,
+                              child: const Icon(Icons.camera),
+                            ),
+                            FloatingActionButton(
+                              heroTag: 'switchCamera',
+                              onPressed: () => context
+                                  .read<CameraViewBloc>()
+                                  .add(SwitchCamera()),
+                              child: const Icon(Icons.switch_camera),
+                            ),
+                          ],
                         ),
                       ),
-                  ],
+                    ),
+                  ),
                 ),
               ],
             )

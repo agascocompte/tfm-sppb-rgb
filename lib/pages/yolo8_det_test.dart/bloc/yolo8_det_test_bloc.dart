@@ -91,14 +91,17 @@ class Yolo8DetTestBloc extends Bloc<Yolo8DetTestEvent, Yolo8DetTestState> {
             scaleY)
         .toInt();
 
+    _saveImage(state.stateData.capturedImage, 'full');
     // Recortar la imagen dentro de la bounding box
     img.Image croppedImage = img.copyCrop(state.stateData.capturedImage!,
         x: left, y: top, width: width, height: height);
 
+    _saveImage(croppedImage, 'bbox');
     // Opcional: Redimensionar la imagen recortada si es necesario
     img.Image resizedCroppedImage =
         img.copyResize(croppedImage, width: 224, height: 448);
 
+    _saveImage(resizedCroppedImage, 'bbox_resized');
     // Calcula la altura de la mitad inferior
     int startY = resizedCroppedImage.height ~/ 2;
     height = resizedCroppedImage.height - startY;
