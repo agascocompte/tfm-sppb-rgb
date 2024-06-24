@@ -1,20 +1,23 @@
 part of 'raw_test_bloc.dart';
 
 class RawTestStateData {
+  final IsolateUtils? isolateUtils;
   final Classifier? classifier;
   final String label;
 
   RawTestStateData({
-    this.label = "No data",
+    this.isolateUtils,
     this.classifier,
+    this.label = "No data",
   });
 
   RawTestStateData copyWith({
+    IsolateUtils? isolateUtils,
     Classifier? classifier,
     String? label,
-    img.Image? capturedImage,
   }) {
     return RawTestStateData(
+      isolateUtils: isolateUtils ?? this.isolateUtils,
       classifier: classifier ?? this.classifier,
       label: label ?? this.label,
     );
