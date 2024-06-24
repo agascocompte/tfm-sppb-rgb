@@ -34,26 +34,46 @@ class CameraView extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            if (viewCapturedImages)
+                            if (viewCapturedImages) ...[
                               FloatingActionButton(
                                 heroTag: 'viewCapturedImages',
                                 onPressed: () =>
                                     context.push(AppRouter.viewCapturedImages),
-                                child: const Icon(Icons.image_outlined),
+                                child: const Icon(
+                                  Icons.image_outlined,
+                                  size: 50,
+                                ),
                               ),
+                            ] else ...[
+                              const Opacity(
+                                opacity: 0.0,
+                                child: FloatingActionButton(
+                                  heroTag: 'placeholder1',
+                                  onPressed: null,
+                                ),
+                              ),
+                            ],
                             FloatingActionButton(
                               heroTag: 'onCapture',
                               onPressed: onCapture,
-                              child: const Icon(Icons.camera),
+                              child: Icon(
+                                !state.stateData.isStreaming
+                                    ? Icons.play_arrow_outlined
+                                    : Icons.stop_outlined,
+                                size: 50,
+                              ),
                             ),
                             FloatingActionButton(
                               heroTag: 'switchCamera',
                               onPressed: () => context
                                   .read<CameraViewBloc>()
                                   .add(SwitchCamera()),
-                              child: const Icon(Icons.switch_camera),
+                              child: const Icon(
+                                Icons.switch_camera,
+                                size: 50,
+                              ),
                             ),
                           ],
                         ),
