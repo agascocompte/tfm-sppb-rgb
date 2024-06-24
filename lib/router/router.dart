@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sppb_rgb/pages/image_detail/image_detail.dart';
 import 'package:sppb_rgb/pages/label_images/label_images.dart';
 import 'package:sppb_rgb/pages/home/home.dart';
+import 'package:sppb_rgb/pages/raw_test/raw_test.dart';
 import 'package:sppb_rgb/pages/view_captured_images/view_captured_images.dart';
 import 'package:sppb_rgb/pages/yolo8_det_test.dart/yolo8_det_test.dart';
 import 'package:sppb_rgb/pages/yolo8_seg_test/yolo8_seg_test.dart';
@@ -16,6 +17,7 @@ class AppRouter {
   static const String imageDetail = "/image-detail";
   static const String testYolo8Seg = "/test-yolo8-seg";
   static const String testYolo8Det = "/test-yolo8-det";
+  static const String testRaw = "/test-raw";
 
   static GoRouter router = GoRouter(
     initialLocation: homeRoute,
@@ -71,6 +73,15 @@ class AppRouter {
         name: testYolo8Det,
         builder: (BuildContext context, GoRouterState state) {
           return Yolo8DetTestPage(
+            key: state.pageKey,
+          );
+        },
+      ),
+      GoRoute(
+        path: "/test-raw",
+        name: testRaw,
+        builder: (BuildContext context, GoRouterState state) {
+          return RawTestPage(
             key: state.pageKey,
           );
         },

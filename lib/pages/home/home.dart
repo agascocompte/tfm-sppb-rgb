@@ -32,8 +32,8 @@ class HomePage extends StatelessWidget {
               child: const Text('Test YOLO8 Detector'),
             ),
             ElevatedButton(
-              onPressed: () {},
-              child: const Text('Test No YOLO'),
+              onPressed: () => context.push(AppRouter.testRaw),
+              child: const Text('Test Raw'),
             ),
           ],
         ),

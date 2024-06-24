@@ -23,8 +23,8 @@ class RawTestBloc extends Bloc<RawTestEvent, RawTestState> {
 
   FutureOr<void> _loadModel(
       RawTestEvent event, Emitter<RawTestState> emit) async {
-    Classifier classifier = MobileNetV3SmallClassifier(
-        modelName: 'mobile_net_v3_small_opt_raw_opt');
+    Classifier classifier =
+        MobileNetV3SmallClassifier(modelName: 'mobile_net_v3_small_raw_opt');
 
     await Future.wait([
       classifier.loadModel(),

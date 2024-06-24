@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sppb_rgb/di/dependency_injector.dart';
 import 'package:sppb_rgb/pages/label_images/bloc/label_images_bloc.dart';
+import 'package:sppb_rgb/pages/raw_test/bloc/raw_test_bloc.dart';
 import 'package:sppb_rgb/pages/view_captured_images/bloc/view_captured_images_bloc.dart';
 import 'package:sppb_rgb/pages/yolo8_det_test.dart/bloc/yolo8_det_test_bloc.dart';
 import 'package:sppb_rgb/pages/yolo8_seg_test/bloc/yolo8_seg_test_bloc.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
             create: (context) => sl<Yolo8SegTestBloc>()..add(LoadSegModels())),
         BlocProvider(
             create: (context) => sl<Yolo8DetTestBloc>()..add(LoadDetModels())),
+        BlocProvider(create: (context) => sl<RawTestBloc>()..add(LoadModel())),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
