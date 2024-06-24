@@ -6,6 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:image/image.dart' as img;
+import 'package:sppb_rgb/utils/image_utils.dart';
+
 part 'camera_view_event.dart';
 part 'camera_view_state.dart';
 
@@ -40,10 +43,55 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     emit(CameraSwitched(state.stateData.copyWith(isRearCamera: isRearCamera)));
   }
 
+  // FutureOr<void> _beginImageCapture(
+  //     BeginImageCapture event, Emitter<CameraViewState> emit) async {
+  //   Duration captureDuration = Duration(seconds: event.capturingTime);
+  //   const captureInterval = Duration(milliseconds: 50);
+
+  //   final directory = await getExternalStorageDirectory();
+  //   if (directory == null) {
+  //     emit(CameraError(state.stateData,
+  //         error: "Error: external storage directory is not available"));
+  //     return;
+  //   }
+
+  //   final label = event.label;
+  //   final controller = state.stateData.cameraController;
+
+  //   if (controller != null && controller.value.isInitialized) {
+  //     final labelDirectory = Directory('${directory.path}/$label');
+  //     if (!await labelDirectory.exists()) {
+  //       await labelDirectory.create(recursive: true);
+  //     }
+  //     final endTime = DateTime.now().add(captureDuration);
+  //     int imagesCaptured = 0;
+  //     while (DateTime.now().isBefore(endTime)) {
+  //       try {
+  //         final image = await controller.takePicture();
+  //         final String timestamp =
+  //             DateTime.now().millisecondsSinceEpoch.toString();
+  //         final String imagePath = '${labelDirectory.path}/$timestamp.jpg';
+
+  //         final File imageFile = File(imagePath);
+  //         await image.saveTo(imageFile.path);
+  //         await Future.delayed(captureInterval);
+  //         imagesCaptured++;
+  //       } catch (e) {
+  //         emit(
+  //             CameraError(state.stateData, error: "Error capturing image: $e"));
+  //       }
+  //     }
+  //     emit(GatheringImagesCompleted(state.stateData,
+  //         msg: "Total images gathered: $imagesCaptured"));
+  //   } else {
+  //     emit(CameraError(state.stateData,
+  //         error: "Error: camera is not initialized"));
+  //   }
+  // }
+
   FutureOr<void> _beginImageCapture(
       BeginImageCapture event, Emitter<CameraViewState> emit) async {
     Duration captureDuration = Duration(seconds: event.capturingTime);
-    const captureInterval = Duration(milliseconds: 50);
 
     final directory = await getExternalStorageDirectory();
     if (directory == null) {
@@ -60,26 +108,41 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
       if (!await labelDirectory.exists()) {
         await labelDirectory.create(recursive: true);
       }
+
       final endTime = DateTime.now().add(captureDuration);
       int imagesCaptured = 0;
-      while (DateTime.now().isBefore(endTime)) {
-        try {
-          final image = await controller.takePicture();
-          final String timestamp =
-              DateTime.now().millisecondsSinceEpoch.toString();
-          final String imagePath = '${labelDirectory.path}/$timestamp.jpg';
+      bool isCapturing = true;
 
-          final File imageFile = File(imagePath);
-          await image.saveTo(imageFile.path);
-          await Future.delayed(captureInterval);
+      await controller.startImageStream((CameraImage image) async {
+        if (!isCapturing) return;
+
+        final now = DateTime.now();
+        if (now.isAfter(endTime)) {
+          isCapturing = false;
+          await controller.stopImageStream();
+          return;
+        }
+
+        final String timestamp = now.millisecondsSinceEpoch.toString();
+        final String imagePath = '${labelDirectory.path}/$timestamp.jpg';
+
+        try {
+          img.Image convertedImage = ImageUtils.convertYUV420ToImage(image);
+          _saveImage(convertedImage, imagePath, state.stateData.isRearCamera);
           imagesCaptured++;
         } catch (e) {
           emit(
               CameraError(state.stateData, error: "Error capturing image: $e"));
+          isCapturing = false;
+          await controller.stopImageStream();
         }
+      });
+
+      await Future.delayed(captureDuration);
+      if (!emit.isDone) {
+        emit(GatheringImagesCompleted(state.stateData,
+            msg: "Total images gathered: $imagesCaptured"));
       }
-      emit(GatheringImagesCompleted(state.stateData,
-          msg: "Total images gathered: $imagesCaptured"));
     } else {
       emit(CameraError(state.stateData,
           error: "Error: camera is not initialized"));
@@ -115,5 +178,15 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
       StopImageStreaming event, Emitter<CameraViewState> emit) async {
     await state.stateData.cameraController!.stopImageStream();
     emit(UpdatedStreamingStatus(state.stateData.copyWith(isStreaming: false)));
+  }
+
+  _saveImage(img.Image image, String imagePath, bool isRearCamera) async {
+    File finalImageFile = File(imagePath);
+
+    if (!isRearCamera) {
+      image = img.copyRotate(image, angle: 180);
+      image = img.flipHorizontal(image);
+    }
+    await finalImageFile.writeAsBytes(img.encodePng(image));
   }
 }
