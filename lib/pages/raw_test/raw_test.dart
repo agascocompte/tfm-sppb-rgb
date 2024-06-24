@@ -9,7 +9,7 @@ class RawTestPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CameraViewBloc, CameraViewState>(
+    return BlocConsumer<CameraViewBloc, CameraViewState>(
       listener: (context, state) async {
         if (state is PictureCaptured) {
           context
@@ -18,50 +18,56 @@ class RawTestPage extends StatelessWidget {
           context.read<RawTestBloc>().add(ProcessImage(image: state.picture));
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Raw prediction example"),
-        ),
-        body:
-            BlocConsumer<RawTestBloc, RawTestState>(listener: (context, state) {
-          if (state is PredictionSuccess) {
-            context
-                .read<CameraViewBloc>()
-                .add(UpdateIsImageProcessing(isImageProcessing: false));
-          }
-        }, builder: (context, state) {
-          return ((state.stateData.classifier?.isLoaded ?? false))
-              ? Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CameraView(
-                      onCapture: () => context
-                          .read<CameraViewBloc>()
-                          .add(BeginImageStreaming()),
-                    ),
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: Container(
-                        height: 100,
-                        width: 360,
-                        color: Colors.black.withOpacity(0.5),
-                        child: Center(
-                          child: Text(
-                            state.stateData.label,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 20),
+      builder: (context, cameraState) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Raw prediction example"),
+          ),
+          body: BlocConsumer<RawTestBloc, RawTestState>(
+              listener: (context, state) {
+            if (state is PredictionSuccess) {
+              context
+                  .read<CameraViewBloc>()
+                  .add(UpdateIsImageProcessing(isImageProcessing: false));
+            }
+          }, builder: (context, state) {
+            return ((state.stateData.classifier?.isLoaded ?? false))
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CameraView(
+                        onCapture: () => !cameraState.stateData.isStreaming
+                            ? context
+                                .read<CameraViewBloc>()
+                                .add(BeginImageStreaming())
+                            : context
+                                .read<CameraViewBloc>()
+                                .add(StopImageStreaming()),
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 20,
+                        child: Container(
+                          height: 100,
+                          width: 360,
+                          color: Colors.black.withOpacity(0.5),
+                          child: Center(
+                            child: Text(
+                              state.stateData.label,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-              : const Center(
-                  child: Text("Models not loaded, waiting for them"),
-                );
-        }),
-      ),
+                    ],
+                  )
+                : const Center(
+                    child: Text("Models not loaded, waiting for them"),
+                  );
+          }),
+        );
+      },
     );
   }
 }

@@ -14,6 +14,8 @@ class BeginImageCapture extends CameraViewEvent {
 
 class BeginImageStreaming extends CameraViewEvent {}
 
+class StopImageStreaming extends CameraViewEvent {}
+
 class UpdateIsImageProcessing extends CameraViewEvent {
   bool isImageProcessing;
   UpdateIsImageProcessing({required this.isImageProcessing});

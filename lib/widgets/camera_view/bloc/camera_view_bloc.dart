@@ -16,6 +16,7 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
     on<SwitchCamera>(_switchCamera);
     on<BeginImageCapture>(_beginImageCapture);
     on<BeginImageStreaming>(_beginImageStreaming);
+    on<StopImageStreaming>(_stopImageStreaming);
     on<UpdateIsImageProcessing>(_updateIsImageProcessing);
     on<PictureCapturedEvent>(_handlePictureCaptured);
   }
@@ -93,6 +94,7 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
 
   FutureOr<void> _beginImageStreaming(
       BeginImageStreaming event, Emitter<CameraViewState> emit) async {
+    emit(UpdatedStreamingStatus(state.stateData.copyWith(isStreaming: true)));
     await state.stateData.cameraController!
         .startImageStream((CameraImage image) {
       if (!state.stateData.isProcessingImage) {
@@ -103,6 +105,15 @@ class CameraViewBloc extends Bloc<CameraViewEvent, CameraViewState> {
 
   FutureOr<void> _handlePictureCaptured(
       PictureCapturedEvent event, Emitter<CameraViewState> emit) async {
-    emit(PictureCaptured(state.stateData, picture: event.image));
+    emit(PictureCaptured(
+      state.stateData,
+      picture: event.image,
+    ));
+  }
+
+  FutureOr<void> _stopImageStreaming(
+      StopImageStreaming event, Emitter<CameraViewState> emit) async {
+    await state.stateData.cameraController!.stopImageStream();
+    emit(UpdatedStreamingStatus(state.stateData.copyWith(isStreaming: false)));
   }
 }

@@ -4,12 +4,14 @@ class CameraViewStateData {
   List<CameraDescription>? cameras;
   CameraController? cameraController;
   bool isRearCamera;
+  bool isStreaming;
   bool isProcessingImage;
 
   CameraViewStateData({
     this.cameras,
     this.cameraController,
     this.isRearCamera = true,
+    this.isStreaming = false,
     this.isProcessingImage = false,
   });
 
@@ -17,12 +19,14 @@ class CameraViewStateData {
     List<CameraDescription>? cameras,
     CameraController? cameraController,
     bool? isRearCamera,
+    bool? isStreaming,
     bool? isProcessingImage,
   }) {
     return CameraViewStateData(
       cameras: cameras ?? this.cameras,
       cameraController: cameraController ?? this.cameraController,
       isRearCamera: isRearCamera ?? this.isRearCamera,
+      isStreaming: isStreaming ?? this.isStreaming,
       isProcessingImage: isProcessingImage ?? this.isProcessingImage,
     );
   }
@@ -45,6 +49,11 @@ class CamerasInitialized extends CameraViewState {
 
 class CameraSwitched extends CameraViewState {
   CameraSwitched(CameraViewStateData stateData) : super(stateData: stateData);
+}
+
+class UpdatedStreamingStatus extends CameraViewState {
+  UpdatedStreamingStatus(CameraViewStateData stateData)
+      : super(stateData: stateData);
 }
 
 class CameraError extends CameraViewState {
