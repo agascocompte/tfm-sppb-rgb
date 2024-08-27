@@ -21,13 +21,13 @@ This is a Flutter-based mobile application designed for collecting images of ind
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/image-collection-app.git
+   git clone https://github.com/agascocompte/tfm-sppb-rgb.git
    ```
 
 2. **Navigate to the project directory:**
 
    ```bash
-   cd image-collection-app
+   cd tfm-sppb-rgb
    ```
 
 3. **Install dependencies:**
@@ -54,20 +54,6 @@ This is a Flutter-based mobile application designed for collecting images of ind
 4. **Review images:** After capturing, you can review the images in the gallery.
 5. **Share images:** Select the images you want to share and use the sharing options to send them via email, messaging apps, or upload them to Google Drive.
 
-## Contributing
-
-Contributions are welcome! Please follow these steps to contribute:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes and commit them (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a Pull Request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
-For any questions or inquiries, please contact [yourname@domain.com](mailto:yourname@domain.com).
+For any questions or inquiries, please contact [agasco@uji.es](mailto:agasco@uji.es).
