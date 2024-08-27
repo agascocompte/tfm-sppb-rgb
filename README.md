@@ -1,16 +1,73 @@
-# sppb_rgb
+# sppb_rgb (Image Collection Application)
 
-A new Flutter project.
+This is a Flutter-based mobile application designed for collecting images of individuals performing specific balance postures. The application is intended for use in research and development of machine learning models for balance posture classification, particularly in the context of frailty assessment in elderly individuals.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Label Selection:** Users can select the specific balance posture they wish to capture images for, including feet-together, semi-tandem, tandem, and no-balance positions.
+- **Continuous Image Capture:** The application captures a stream of high-resolution images for a duration of 15 seconds per session.
+- **Review and Share:** Users can review captured images, select specific images, and share them via email, messaging apps, or directly upload them to Google Drive.
+- **Camera Switching:** Users can switch between the front and rear cameras of the device.
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Prerequisites
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Flutter](https://flutter.dev/docs/get-started/install) (Ensure you have Flutter installed and configured on your machine)
+- A compatible device (Android or iOS) for running the application
+
+### Steps
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/yourusername/image-collection-app.git
+   ```
+
+2. **Navigate to the project directory:**
+
+   ```bash
+   cd image-collection-app
+   ```
+
+3. **Install dependencies:**
+
+   Run the following command to install all required dependencies:
+   
+   ```bash
+   flutter pub get
+   ```
+   
+4. **Run the application:**
+
+   Connect your mobile device or start an emulator, then run:
+   
+   ```bash
+   flutter run
+   ```
+
+## Usage
+
+1. **Start the application:** Open the app on your mobile device.
+2. **Select a balance posture:** Choose the desired posture label from the top menu.
+3. **Capture images:** Press the capture button to start recording images. The application will automatically capture images for 15 seconds.
+4. **Review images:** After capturing, you can review the images in the gallery.
+5. **Share images:** Select the images you want to share and use the sharing options to send them via email, messaging apps, or upload them to Google Drive.
+
+## Contributing
+
+Contributions are welcome! Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes and commit them (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a Pull Request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or inquiries, please contact [yourname@domain.com](mailto:yourname@domain.com).
